@@ -1,0 +1,20 @@
+# Setup
+export DOTFILES=$HOME/.dotfiles
+export APPS_PATH=$HOME/.apps
+
+PATH="$DOTFILES/bin:$PATH"
+
+# Add to $PATH installed apps from $APPS_PATH
+for app in $APPS_PATH/*; do
+  [ -d $app/bin ] && PATH="${app}/bin:$PATH"
+  [ -d $app/sbin ] && PATH="${app}/sbin:$PATH"
+  [ -d $app/share/man ] && MANPATH="${app}/share/man:$MANPATH"
+done
+
+# Allow the discovery of locally installed bin node modules
+PATH="./node_modules/.bin:$PATH"
+
+source $DOTFILES/lib/functions.sh
+source $DOTFILES/lib/config.zsh
+source $DOTFILES/lib/prompt.sh
+source $DOTFILES/lib/aliases.sh

@@ -1,0 +1,316 @@
+" Enable vi uncompatible mode, to enable more features, must come first because it changes other options.
+set nocompatible
+set encoding=utf-8
+
+" Automatic reload of .vimrc after editing
+autocmd BufWritePost .vimrc source ~/.vimrc
+
+" Show trailing whitespace
+" autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+" autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" History settings
+set history=500
+set undolevels=500
+set pastetoggle=<F2>
+
+
+" Mouse and backspace
+set mouse=a  " on OSX press ALT and Click
+set bs=2     " make backspace behave like normal again
+
+
+" Disable backup knd swap files - they trigger too many events on filesystem watchers
+set nobackup
+set nowritebackup
+set noswapfile
+
+" No beeping
+set visualbell
+
+
+" Enable vim to remember undo chains between sessions (> 8.3)
+if v:version >= 704
+  set undofile
+  let &undodir=&directory
+endif
+
+
+
+" =============================================================================
+"   Edit:
+" =============================================================================
+" Use clipboard register.
+set clipboard& clipboard+=unnamed
+
+" Smart insert tab setting
+set smarttab
+" Use spaces instead of tabs
+set expandtab
+" Substitute <Tab> with blanks
+set tabstop=2
+" Use spaces instead of tab
+set softtabstop=2
+" Autoindent width
+set shiftwidth=2
+" Round indent by shiftwidth
+set shiftround
+
+" Highlight matches as you type
+set incsearch
+" Highlight matches
+set hlsearch
+" Case-insensitive searching
+set ignorecase
+" Case-sensitive is expression contains capital
+set smartcase
+
+" Enable backspace delete indent and newline
+set backspace=indent,eol,start  " Intuitive backspacing
+
+" Highlight parenthesis
+set showmatch
+" Highlight when CursorMoved.
+set cpoptions-=m
+set matchtime=3
+" Highlight <>.
+set matchpairs+=<:>
+
+" Display another buffer when current buffer isn't saved
+set hidden
+
+" Auto reload if file changed
+"set autoread
+" Automatically save files when switching between them
+autocmd FocusLost * silent! :wa
+autocmd TabLeave * silent! :wa
+
+" Disable automatically insert comment
+autocmd FileType * setl formatoptions-=ro | setl formatoptions+=mM
+
+" Ignore case on insert completion
+set infercase
+
+" Enable folding
+set foldenable
+" Fold method [syntax, indent, expr]
+set foldmethod=expr
+" Show folding level
+set commentstring=%s
+set fillchars=fold:\ ,diff:-
+
+
+" Enable virtualedit in visual block mode.
+set virtualedit=block
+
+" Enhanced command line completion
+set wildmenu
+" Complete files like a shell
+set wildmode=list:longest,full
+" Display all the information of the tag by the supplement of the Insert Mode
+set showfulltag
+" Can supplement a tag in a command-line
+set wildoptions=tagfile
+" Completition setting
+set completeopt=menuone
+" Don't complete from other buffers
+set complete=.
+" Set completition popup max height
+set pumheight=20
+
+" Enable spellcheck
+set spelllang=en_us
+
+
+
+" =============================================================================
+"   Plugin settings:
+" =============================================================================
+" File type detection / set ident mode
+filetype off
+filetype plugin indent on
+
+
+
+" =============================================================================
+"   Visual elements:
+" =============================================================================
+" Set a minimum window width
+"set winwidth=100
+" Set a minimum window height
+"set winheight=60
+
+" Scrollbars
+set sidescrolloff=2
+set scrolloff=3
+set numberwidth=4
+
+" Splitting a window horizontal will put it below the current one
+set splitbelow
+" Splitting a window vertical will put it to the right o the current one
+set splitright
+
+" Set help and preview window height
+set previewheight=10
+set helpheight=12
+
+" Don't redraw while macro executing
+set lazyredraw
+
+" When a line is long don't omit it in @
+set display=lastline
+
+syntax on
+set t_Co=256
+
+"set cursorline
+
+set colorcolumn=100
+"set tw=80     " Width of the document (used by gd)
+set wrap      " Disable text wrap on load
+set formatoptions=qrn1			" Don't wrap text when typing
+
+set number    " Show line numbers
+set ruler     " Show cursor position
+set showcmd   " Display incomplete commands
+set showmode  " Display the current mode
+
+set laststatus=2  " Show the status line all the time
+set scrolloff=3  " Show 5 lines of context around the cursor
+
+set title       " Set the terminal's title
+
+
+
+" =============================================================================
+"   Useful hacks:
+" =============================================================================
+" Toggle options
+function! ToggleOption(option)
+  execute 'setlocal' a:option.'!'
+  execute 'setlocal' a:option.'?'
+endfunction
+
+" Toggle variables.
+function! ToggleVariable(variable)
+  if eval(a:variable)
+    execute 'let' a:variable.' = 0'
+  else
+    execute 'let' a:variable.' = 1'
+  endif
+  echo printf('%s = %s', a:variable, eval(a:variable))
+endfunction
+
+" Show element syntax scope
+function! s:ShowElementScope()
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunction
+
+" Remove trailing whitespaces
+function! s:RemoveTrailingSpaces()
+  silent! :%s:\s\+$::
+  execute 'normal! ``'
+endfunction
+
+
+
+" =============================================================================
+"   Keybinds:
+" =============================================================================
+" Set , as the leader key
+let mapleader=","
+
+" Smart space mapping:
+" Notice: when starting other <Space> mappings in noremap, disappeared [Space].
+nmap <Space>  [Space]
+xmap <Space>  [Space]
+nnoremap [Space]  <Nop>
+xnoremap [Space]  <Nop>
+
+" Show scope
+nnoremap [Space]ss  :call <SID>ShowElementScope()<CR>
+
+" Clear search highlights
+nnoremap <silent> [Space]/  :nohls<CR>
+
+" Set autoread - reaload file when changes where made outside of VIM
+nnoremap [Space]ar  :setlocal autoread<CR>
+" Output encoding information.
+nnoremap <silent> [Space]en  :setlocal encoding? termencoding? fenc? fencs?<CR>
+" Set spell check
+nnoremap [Space]sp  :call ToggleOption('spell')<CR>
+
+" Easily edit .vimrc and .gvimrc
+nnoremap <silent> [Space]ev  :edit $MYVIMRC<CR>
+nnoremap <silent> [Space]eg  :edit $MYGVIMRC<CR>
+
+" Easily check registers and marks.
+nnoremap <silent> [Space]mk  :marks<CR>
+nnoremap <silent> [Space]re  :registers<CR>
+
+" Show buffers
+nnoremap <silent> [Space]b  :ls<CR>:buffer<Space>
+nnoremap <silent> [Space].  :bn<CR>
+nnoremap <silent> [Space],  :bp<CR>
+
+" Delete spaces before newline
+nnoremap <silent> [Space]ts  :call <SID>RemoveTrailingSpaces()<CR>
+
+
+" Normal mode keymap:
+" Bind Ctrl+<movement> keys to move around windows
+noremap <Right>  <c-w>l
+noremap <Up>     <c-w>k
+noremap <Down>   <c-w>j
+noremap <Left>   <c-w>h
+
+" Make Y yank to the end of the line
+noremap Y  y$
+
+" Improve up/down movement on wrapped lines
+nnoremap j  gj
+nnoremap k  gk
+" Visual mode keymap:
+" Easier indentation in Visiual mode
+vnoremap <  <gv
+vnoremap >  >gv
+xnoremap <Tab>  >gv
+xnoremap <S-Tab>  <gv
+xnoremap <CR>  c
+
+" Use arrow keys to indend and disable normal behavior
+vmap <Left>  <
+vmap <Right>  >
+
+" Insert mode keymap:
+" Insert tab
+inoremap <C-t>  <C-v><Tab>
+" Delete char
+inoremap <C-d>  <Del>
+" Move to head (start of the line)
+inoremap <C-a>  <C-o>^
+" Enable undo
+inoremap <C-u>  <C-o>u
+
+" Command-line mode keymap:
+" Move to head (start of the line)
+cnoremap <C-a>  <Home>
+" Delete char.
+cnoremap <C-d>  <Del>
+" Move to end.
+cnoremap <C-e>  <End>
+" Delete to end.
+cnoremap <C-k>  <C-\>e getcmdpos() == 1 ? '' : getcmdline()[:getcmdpos()-2]<CR>
+" Paste.
+cnoremap <C-y>  <C-r>*
+" View history.
+cnoremap <C-s>  <C-f>
+" View completion list.
+cnoremap <C-l>  <C-d>
