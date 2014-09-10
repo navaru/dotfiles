@@ -47,7 +47,7 @@ prompt() {
 rprompt() {
   local lineup=$'\e[1A'
   local linedown=$'\e[1B'
-  local hostname="%{$fg[red]%}⧼ ☵ $(hostname) ℷ $(whoami) ⧽%{$reset_color%}"
+  local hostname="%{$fg[green]%}☵ $(hostname) ℷ $(whoami)%{$reset_color%}"
 
   echo "%{$lineup%}$hostname%{$linedown%}"
 }

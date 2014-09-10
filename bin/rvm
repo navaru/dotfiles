@@ -1,0 +1,219 @@
+#!/usr/bin/env bash
+
+
+##########################################################################################
+
+# log <type> <msg>
+log() {
+  printf "  \033[36m%10s\033[0m : \033[90m%s\033[0m\n" "$1" "$2"
+}
+
+
+# abort <msg>  -  Exit with the given message
+abort() {
+  printf "\n  \033[31mError: $@\033[0m\n\n" && exit 1
+}
+
+
+# Ensure we have curl support.
+is_curl_installed() {
+  command -v curl > /dev/null || abort "curl not found"
+  export GET="curl -# -L"
+}
+
+
+# Check if the HEAD response of <url> is 200.
+check_url() {
+  curl -Is $1 | head -n 1 | grep 200 > /dev/null
+}
+
+
+# Parse end return only versions
+extract_semver() {
+  echo $@ | egrep -o '[0-9]*[.][0-9]*[.][0-9]*([0-9A-Za-z-]*)'
+}
+
+##########################################################################################
+
+
+REDIS_PATH="$APPS_PATH/redis"
+VERSIONS_DIR="$REDIS_PATH/redis/versions"
+RELEASES_URL="http://download.redis.io/releases"
+
+
+test -z "$REDIS_PATH" && abort "REDIS_PATH not defined"
+
+test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
+test -d $REDIS_PATH/bin || mkdir -p $REDIS_PATH/bin
+
+
+# Ensure we have curl support
+is_curl_installed
+
+
+# Get all redis versions available
+get_all_versions() {
+  extract_semver `$GET $RELEASES_URL 2> /dev/null` | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
+}
+
+get_latest_version() {
+  get_all_versions | tail -n 1
+}
+
+
+# Check for installed version, and return version
+get_active_version() {
+  which redis-server >& /dev/null || abort "redis not installed"
+  extract_semver `redis-server --version`
+}
+
+get_installed_versions() {
+  extract_semver `ls -d $VERSIONS_DIR/*` | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
+}
+
+
+# Display installed versions and select which version to activate
+display_installed_versions() {
+  local KEY_UP=$'\033[A'
+  local KEY_DOWN=$'\033[B'
+
+  case $1 in
+    prev) selected=`get_installed_versions | grep $selected -B 1 | head -n 1`;;
+    next) selected=`get_installed_versions | grep $selected -A 1 | tail -n 1`;;
+    *) selected=`get_active_version`
+  esac
+
+  display_versions "`get_installed_versions`" $selected
+
+  while true; do
+    read -s -n 3 input
+    case $input in
+        $KEY_UP) display_installed_versions prev ;;
+      $KEY_DOWN) display_installed_versions next ;;
+              *) activate $selected && exit 0;;
+    esac
+  done
+}
+
+# Pretty print versions
+display_versions() {
+  local versions=$1
+  local selected=$2
+
+  if [ $selected == "" ]; then
+    selected=`get_active_version`
+  fi
+
+  clear
+  for version in $versions; do
+    if [ $version == $selected ]; then
+      printf " \x1B[32m> $version\x1B[39m\n"
+    else
+      if [ -d $VERSIONS_DIR/$version ]; then
+        printf "  \x1B[32m $version\x1B[39m\n"
+      else
+        printf "  \x1B[30m $version\x1B[39m\n"
+      fi
+    fi
+  done
+  echo
+}
+
+
+# Activate <version>
+activate() {
+  local version=$1
+
+  if test "$version" != "`get_active_version`"; then
+    cp -fR $VERSIONS_DIR/$version/src/* $REDIS_PATH/bin
+    echo redis `get_active_version` is now active
+  fi
+}
+
+
+# Choose install version
+install() {
+  case $1 in
+    latest) install_version `$0 --latest`; exit ;;
+    *) install_version $@; exit;;
+  esac
+}
+
+
+# Install <version>
+install_version() {
+  local version=$1
+  local dir=$VERSIONS_DIR/$version
+  local url=$RELEASES_URL/redis-$version.tar.gz
+
+  test -d $dir && abort "redis v$version already installed"
+
+  check_url $url || abort "invalid redis version $version"
+
+  log install "Installing redis v$version"
+
+  mkdir -p $dir && log mkdir $dir
+  cd $dir
+
+  curl -L# $url | tar -zx --strip 1
+  make
+
+  activate $version
+}
+
+
+# Remove <version>
+remove_versions() {
+  test -z $1 && abort "version(s) required"
+  while test $# -ne 0; do
+    rm -rf $VERSIONS_DIR/${1#v}
+    shift
+  done
+}
+
+
+# Output usage information.
+display_help() {
+  cat <<-EOF
+
+  Usage: rvm [command] [args] [options]
+
+  Commands:
+
+    rvm                            Output installed versions
+    rvm list                       Output the versions of redis available
+    rvm install <version>          Install redis <version>
+    rvm install latest             Install the latest redis release
+    rvm remove <version>           Remove the given version(s)
+    rvm --latest                   Output the latest redis version available
+
+  Options:
+
+    -V, --version   Output current version of n
+    -h, --help      Display help information
+
+  Aliases:
+
+    install i
+    list    ls
+    remove  rm
+
+EOF
+  exit 0
+}
+
+
+# Handle arguments.
+if test $# -eq 0; then
+  test "`ls -l $VERSIONS_DIR | grep ^d`" || abort "no installed version"
+  display_installed_versions
+else
+  case $1 in
+    ls|list) display_versions "`get_all_versions`" `get_active_version`; exit ;;
+    --latest) get_latest_version; exit ;;
+    i|install) shift; install $@; exit ;;
+    rm|remove) shift; remove_versions $@; exit ;;
+    -v|--version) echo $VERSION ;;
+    -h|--help|help|*) display_help ;;
+  esac
+fi

@@ -23,14 +23,17 @@ zsh_setup() {
 
 zsh_install() {
   local source="http://www.zsh.org/pub/zsh.tar.gz"
+  local tmp="/tmp/zsh-source"
+  mkdir -p $tmp
+
+  log "Downloading $source"
+
+  # download and untar source
+  curl -# -L $source | tar -zx -C $tmp
 
   log "Installing zsh"
 
-  # download and untar source
-  curl -# -L $source | tar -zx -C /tmp
-
-  cd /tmp/zsh-*
-
+  cd $tmp/zsh-*
   ./configure --prefix="$APPS_PATH/zsh"
   make
   make install
@@ -46,7 +49,7 @@ create_symlinks() {
     local file=$HOME/.${filename%.*}
 
     # if file exists, create backup
-    if [ -f $file ]; then
+    if [ -f $file ] || [ -L $file ]; then
       mv "$file" "$file.backup"
     fi
 
@@ -57,7 +60,7 @@ create_symlinks() {
 
 
 # clean backup files
-cleanup() {
+clean() {
   for file in $HOME/.*.backup; do
     log "Removed: $file"
     rm "$file"
@@ -70,7 +73,7 @@ main() {
   source "$DOTFILES/lib/functions.sh"
 
   # install or update zsh
-  zsh_setup
+  zsh_install
 
   # create symlink to .files
   create_symlinks
@@ -78,7 +81,7 @@ main() {
   # parse options
   for option in $@; do
     case $option in
-      -c|--clean) cleanup;;
+      -c|--clean) clean;;
     esac
   done
 }

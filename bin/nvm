@@ -1,161 +1,273 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-NODEJS_PATH="$APPS_PATH/node.js"
-NODEJS_RELEASES="$NODEJS_PATH/releases"
 
-# Parse end return only the semver format
-semver() {
-  echo $@ | egrep -o '[0-9]*[.][0-9]*[.][0-9]*([0-9A-Za-z-]*)'
+##########################################################################################
+
+# log <type> <msg>
+log() {
+  printf "  \033[36m%10s\033[0m : \033[90m%s\033[0m\n" "$1" "$@"
 }
 
 
-# check if a command exists
-is_command() {
-  hash $1 > /dev/null
+# abort <msg>  -  Exit with the given message
+abort() {
+  printf "\n  \033[31mError: $@\033[0m\n\n" && exit 1
+}
+
+
+# Ensure we have curl support.
+is_curl_installed() {
+  command -v curl > /dev/null || abort "curl not found"
+  export GET="curl -# -L"
+}
+
+
+# Check if the HEAD response of <url> is 200.
+check_url() {
+  curl -Is $1 | head -n 1 | grep 200 > /dev/null
+}
+
+
+# Parse end return only versions
+extract_semver() {
+  echo $@ | egrep -o '[0-9]*[.][0-9]*[.][0-9]*([0-9A-Za-z-]*)'
+}
+
+##########################################################################################
+
+
+test -d "$NODEJS_PATH" || NODEJS_PATH="$APPS_PATH/nodejs"
+test -d "$VERSIONS_DIR" || mkdir -p "$VERSIONS_DIR"
+
+
+VERSIONS_DIR=$NODEJS_PATH/versions
+RELEASES_URL="http://nodejs.org/dist"
+
+
+# Ensure we have curl support
+is_curl_installed
+
+
+# Get all node.js versions available
+get_all_versions() {
+  extract_semver `$GET $RELEASES_URL 2> /dev/null` | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
+}
+
+get_latest_version() {
+  get_all_versions | tail -n 1
+}
+
+# Display the latest stable node release version.
+get_latest_stable_version() {
+  echo `get_all_versions` \
+    | egrep -o '[0-9]+\.[0-9]*[02468]+\.[0-9]+' \
+    | tail -n1
 }
 
 
 get_installed_versions() {
-  semver $(ls -d $NODEJS_PATH/versions/*) | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
+  extract_semver `ls -d $VERSIONS_DIR/*` | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
 }
-
 
 get_active_version() {
-  is_command node && semver $(node --version)
+  which node >& /dev/null || abort "node.js not installed"
+  extract_semver `node --version`
 }
 
 
-select_version() {
-  local items=($1)
-  local length=${#items[@]}
-  local selected=$2
-  local index
+# Display installed versions and select which version to activate
+display_installed_versions() {
+  local KEY_UP=$'\033[A'
+  local KEY_DOWN=$'\033[B'
 
-  # clear screen
-  clear
+  case $1 in
+    prev) selected=`get_installed_versions | grep $selected -B 1 | head -n 1`;;
+    next) selected=`get_installed_versions | grep $selected -A 1 | tail -n 1`;;
+       *) selected=`get_active_version`
+  esac
 
-  # display list
-  for (( i = 0; i <= $length; ++i )); do
-    local mark=" "
+  display_versions "`get_installed_versions`" $selected
 
-    if [[ ${items[$i]} =~ $selected ]]; then
-      mark=">"
-      index=$i
-    fi
-
-    echo -e " $mark ${items[$i]}"
+  while true; do
+    read -s -n 3 input
+    case $input in
+        $KEY_UP) display_installed_versions prev ;;
+      $KEY_DOWN) display_installed_versions next ;;
+              *) activate $selected && exit;;
+    esac
   done
-
-  # read key input
-  read -s -n 3 key
-
-  case $key in
-    $'\033[A') # key up
-      index=$([ $index = 0 ] && printf $(($length - 1)) || printf $(($index - 1)))
-      select_version "$1" "${items[$index]}"
-    ;;
-
-    $'\033[B') # key down
-      index=$([ $index = $(($length - 1)) ] && printf 0 || printf $(($index + 1)))
-      select_version "$1" "${items[$index]}"
-    ;;
-
-    "") # enter
-      clear
-      set_version $selected
-    ;;
-
-    *) clear ;;
-  esac
 }
 
 
-set_version() {
-  local version=$1
+# Pretty print versions
+display_versions() {
+  local versions=$1
+  local selected=$2
 
-  echo "Setting node.js active version: $version"
-  cp -R -f $NODEJS_VERSIONS/$version/* $NODEJS_PATH
-  echo "Active node.js version: $(get_active_version)"
+  if [ $selected == "" ]; then
+    selected=`get_active_version`
+  fi
+
+  clear
+  for version in $versions; do
+    if [ $version == $selected ]; then
+      printf " \x1B[32m> $version\x1B[39m\n"
+    else
+      if [ -d $VERSIONS_DIR/$version ]; then
+        printf "  \x1B[32m $version\x1B[39m\n"
+      else
+        printf "  \x1B[30m $version\x1B[39m\n"
+      fi
+    fi
+  done
+  echo
 }
 
 
-list() {
-  local versions=$(get_installed_versions)
-  local active=$(get_active_version)
-
-  select_version "$versions" "$active"
-}
-
-
+# Choose install version
 install() {
-  local version=$1
+  case $1 in
+    stable) install_version `$0 --stable`; exit ;;
+    latest) install_version `$0 --latest`; exit ;;
+         *) install_version $@; exit;;
+  esac
 }
 
 
-download_source() {
+# Install <version>
+install_version() {
   local version=$1
-  local arch="x86"
-  local os
+  local dir=$VERSIONS_DIR/$version
+  local url=`build_download_url $version`
 
-  case $OSTYPE in
-    darwin*) os=darwin ;;
-     linux*) os=linux ;;
-     sunos*) os=sunos ;;
+  test -d $dir && abort "node.js v$version already installed"
+
+  check_url $url || abort "invalid version $version"
+
+  log install "Installing v$version"
+
+  mkdir -p ""$dir""
+  cd $dir
+
+  log fetch $url
+  curl -L# $url | tar -zx --strip 1
+
+  activate $version
+}
+
+
+# Determine tarball url for <version>
+build_download_url() {
+  local version=$1
+  local uname=`uname -a`
+  local arch=x86
+  local os=
+
+  case "$uname" in
+    Darwin*) os=darwin ;;
+     Linux*) os=linux ;;
+     SunOS*) os=sunos ;;
   esac
 
-  case $(uname -a) in
+  case "$uname" in
     *x86_64*) arch=x64 ;;
     *armv6l*) arch=arm-pi ;;
   esac
 
-  curl -o "http://nodejs.org/dist/v$version/node-v$version-$os-$arch.tar.gz"
+  echo "$RELEASES_URL/v$version/node-v$version-$os-$arch.tar.gz"
 }
 
-is_installed() {
+
+# Activate <version>
+activate() {
   local version=$1
 
-  if [  ]
-
-
+  if test "$version" != "`get_active_version`"; then
+    cp -fR $VERSIONS_DIR/$version/* $NODEJS_PATH
+    log activate "node.js `node --version` is now active"
+  fi
 }
 
 
-help() {
-  echo "
-  Usage: nvm <command> <options>
+# Remove <version>
+remove_versions() {
+  test -z $1 && abort "version(s) required"
+  while test $# -ne 0; do
+    if [ $1 == `get_active_version` ]; then
+      printf "\033[33mSKIPPING\033[0m active version $1. "
+      printf "Please change versions before removing.\n"
+    else
+      rm -rf $VERSIONS_DIR/$1
+      log removed node.js v$1
+    fi
+
+    shift
+  done
+}
+
+
+# Execute the given <version> of node with [args]
+execute_with_version() {
+  test -z $1 && abort "version required"
+
+  local version=${1#v}
+  local bin=$VERSIONS_DIR/$version/bin/node
+
+  shift # remove version
+
+  test -f $bin || abort "$version is not installed"
+
+  $bin $@
+}
+
+
+# Output usage information.
+display_help() {
+  cat <<-EOF
+
+  Usage: nvm [command] [args] [options]
 
   Commands:
-    list               List the installed node.js versions
-    install            Install the latest stable node.js release
-    install <version>  Install specific version
-    install dev        Install the latest development node.js release
-    remove <version>   Remove specific version
-    use <version>      Execute specific node.js version
-    help               Display help
+
+    nvm                            Output installed versions
+    nvm list                       Output the versions of node available
+    nvm install latest             Install the latest node release
+    nvm install stable             Install the latest stable node release
+    nvm install <version>          Install node <version>
+    nvm remove <version>           Remove the given version(s)
+    nvm use <version> [args]       Execute node <version> with [args]
+
+
+  Options:
+
+    -v, --version   Output current version
+    -h, --help      Display help information
+    --latest        Output the latest node version available
+    --stable        Output the latest stable node version available
 
   Aliases:
-    ls  list
-    i   install
-    rm  remove
-    h   help
-"
+
+    list    ls
+    install i
+    remove  rm
+
+EOF
 }
 
 
-main() {
-  local command=$1
-
-  # create folders if not available
-  [ -d $NODEJS_PATH ] || mkdir -p $NODEJS_PATH/versions
-
-  # parse arguments
-  case $command in
-        ls|list) list;;
-      i|install) ;;
-      rm|remove) ;;
-            use) ;;
-    -h|--help|*) help;;
+# Handle arguments.
+if test $# -eq 0; then
+  test "`ls -l $VERSIONS_DIR | grep ^d`" || abort "no installed version"
+  display_installed_versions
+else
+  case $1 in
+      ls|list) display_versions "`get_all_versions`" `get_active_version`; exit ;;
+     --latest) get_latest_version; exit ;;
+     --stable) get_latest_stable_version; exit ;;
+    i|install) shift; install $@; exit ;;
+    rm|remove) shift; remove_versions $@; exit ;;
+          use) shift; execute_with_versio n $@; exit ;;
+    -v|--version) echo $VERSION; exit ;;
+    -h|--help|*) display_help; exit;;
   esac
-}
-
-main $@
+fi
