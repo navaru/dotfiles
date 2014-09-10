@@ -1,10 +1,10 @@
 dotfiles
 ========
 
-Default setup for OS environments
+[WIP] Default setup for OS environments
 
 To install run:
 
 ```
-> curl https://raw.githubusercontent.com/navaru/dotfiles/master/install.sh | bash
+> curl https://raw.githubusercontent.com/teugen/dotfiles/master/install.sh | bash
 ```
