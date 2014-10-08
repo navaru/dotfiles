@@ -1,368 +1,286 @@
 #!/usr/bin/env bash
 
-
-##########################################################################################
-
-# log <type> <msg>
-log() {
-  printf "  \033[36m%10s\033[0m : \033[90m%s\033[0m\n" "$1" "$@"
+# check if a command exists
+is_command() {
+  which $1 &> /dev/null
 }
 
 
-# abort <msg>  -  Exit with the given message
-abort() {
-  printf "\n  \033[31mError: $@\033[0m\n\n" && exit 1
-}
-
-
-# Ensure we have curl support.
-is_curl_installed() {
-  command -v curl > /dev/null || abort "curl not found"
-  export GET="curl -# -L"
-}
-
-
-# Check if the HEAD response of <url> is 200.
-check_url() {
-  curl -Is $1 | head -n 1 | grep 200 > /dev/null
-}
-
-
-# Parse end return only versions
-extract_semver() {
+# Parse end return only the semver format
+semver() {
   echo $@ | egrep -o '[0-9]*[.][0-9]*[.][0-9]*([0-9A-Za-z-]*)'
+}
+
+
+# Provides a navigable option list
+#
+# example:
+#   list_select "item1 item2 item3" "item2" "do_something"
+#
+list_select() {
+  local items=$1; shift
+  local list=($items)
+  local length=${#list[@]}
+  local selected=$1; shift
+  local callback=$@
+  local index
+
+  # clear screen
+  clear
+
+  # display list
+  for (( i = 0; i <= $length; ++i )); do
+    local mark=" "
+
+    if [[ ${list[$i]} =~ $selected ]]; then
+      mark="❯"
+      index=$i
+    fi
+
+    echo -e " $mark ${list[$i]}"
+  done
+
+  # read key input
+  read -s -n 3 key
+
+  case $key in
+    $'\033[A') # key up
+      index=$([ $index = 0 ] && printf $(($length - 1)) || printf $(($index - 1)))
+      list_select "$items" "${list[$index]}" $callback
+    ;;
+
+    $'\033[B') # key down
+      index=$([ $index = $(($length - 1)) ] && printf 0 || printf $(($index + 1)))
+      list_select "$items" "${list[$index]}" $callback
+    ;;
+    "") # enter
+      clear
+      $callback $selected
+    ;;
+
+    *) clear ;;
+  esac
 }
 
 
 # Prompt a question and wait for a yes/no answer
 # ask <string: question> <expression: yes> <expression: no>
 ask() {
+  echo
   while true; do
     read -n 1 -p "  $1 [y/n] " answer
+
     case "$answer" in
-      [Yy]*) echo; $2; break;;
-      [Nn]*) echo; $3; break;;
+      [Yy]*) [ -n "$2" ] && $2; break ;;
+      [Nn]*) [ -n "$3" ] && $3; break ;;
           *) printf "\n Please type y or n [yes/no] \n";;
     esac
   done
 }
 
+
 ##########################################################################################
 
 
-VERSION="0.1.0"
-VERSIONS_DIR=$MONGODB_PATH/versions
-RELEASES_URL="http://dl.mongodb.org/dl/src"
-
-
-test -z "$MONGODB_PATH" && abort "MONGODB_PATH not defined"
-
-test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
-test -d $MONGODB_PATH/bin || mkdir -p $MONGODB_PATH/bin
-
-
-# Ensure we have curl support.
-is_curl_installed
-
-
-# Get all node.js versions available
-get_all_versions() {
-  extract_semver `$GET $RELEASES_URL 2> /dev/null` | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
-}
-
-get_latest_stable_version() {
-  echo `get_all_versions` \
-    | egrep -o '[0-9]+\.[0.9]*[02468]+\.[0-9]+' \
-    | tail -n1
-}
+MONGODB_PATH="$APPS_PATH/mongodb"
+MONGODB_VERSIONS="$MONGODB_PATH/versions"
 
 
 get_installed_versions() {
-  extract_semver `ls -d $VERSIONS_DIR/*` | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
+  semver $(ls -d $MONGODB_VERSIONS/*) | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
 }
+
 
 get_active_version() {
-  which mongo >& /dev/null || abort "mongodb not installed"
-  extract_semver `mongo --version`
-}
-
-
-# Display installed versions and select which version to activate
-display_version_selection() {
-  local KEY_UP=$'\033[A'
-  local KEY_DOWN=$'\033[B'
-
-  case $1 in
-    prev) selected=`get_installed_versions | grep $selected -B 1 | head -n 1`;;
-    next) selected=`get_installed_versions | grep $selected -A 1 | tail -n 1`;;
-       *) selected=`get_active_version`; command=$@;;
-  esac
-
-  display_versions "`get_installed_versions`" $selected
-
-  while true; do
-    read -s -n 3 input
-    case $input in
-        $KEY_UP) display_version_selection prev ;;
-      $KEY_DOWN) display_version_selection next ;;
-              *) $command $selected; exit ;;
-    esac
-  done
-}
-
-
-# Pretty print versions
-display_versions() {
-  local versions=$1
-  local selected=$2
-
-  if [ $selected == "" ]; then
-    selected=`get_active_version`
+  if is_command "mongo"; then
+    semver $(mongo --version)
+  else
+    echo "mongodb not installed"
   fi
-
-  clear
-  for version in $versions; do
-    if [ $version == $selected ]; then
-      printf " \x1B[32m> $version\x1B[39m\n"
-    else
-      if [ -d $VERSIONS_DIR/$version ]; then
-        printf "  \x1B[32m $version\x1B[39m\n"
-      else
-        printf "  \x1B[30m $version\x1B[39m\n"
-      fi
-    fi
-  done
-  echo
 }
 
 
-# Choose install version
-install() {
-  case $1 in
-    stable) install_version `$0 --stable`;;
-    latest) install_version `$0 --latest`;;
-         *) install_version $@;;
-  esac
+set_version() {
+  local version=$1
+
+  echo "Setting MongoDB version ..."
+  cp -R -f $MONGODB_VERSIONS/$version/bin "$MONGODB_PATH/bin"
+  echo "Active MongoDB version: $(get_active_version)"
+}
+
+
+list() {
+  local versions=$(get_installed_versions)
+  local active=$(get_active_version)
+
+  list_select "$versions" "$active" "set_version"
 }
 
 
 # Install mongodb <version> binary
-install_version() {
-  local version=$1; shift
-  local config=$@
-  local url=`build_download_url $version`
-  local dir=$VERSIONS_DIR/$version
+install() {
+  local version="$1"
 
-  test -d $dir && abort "v$version already installed"
+  case $version in
+      latest) version=$(get_latest_version) ;;
+    unstable) version=$(get_unstable_version) ;;
+  esac
 
-  # config was passed, must build from source
-  if ! test -z $config; then
-    install_from_source $version $config && exit
+  local dir="$MONGODB_VERSIONS/$version"
+  local url=$(get_version_url $version)
+
+  # is version installed ?
+  if [ -d "$dir" ]; then
+    echo  "MongoDB $version already installed"
+  else
+
+    mkdir -p "$dir" && cd $_
+
+    # download and unarchive source
+    curl -L# "$url" | tar -zx --strip 1
+
+    set_version "$version"
   fi
-
-  check_url $url || abort "invalid version $version"
-
-  log install "Installing binary v$version"
-
-  log mkdir $dir
-  mkdir -p $dir
-  cd $dir
-
-  log fetch $url
-  curl -L# $url | tar -zx --strip 1
-
-  activate $version
 }
 
 
-# mvm source <version> [config]
-install_from_source() {
-  log install "Installing from source"
-
-  local version=$1; shift
-  local config=$@
-  local url="http://fastdl.mongodb.org/src/mongodb-src-r$version.tar.gz"
-  local dir=$VERSIONS_DIR/$version
-  local tmp=/tmp/mongodb-source-$version
-
-  log mkdir $tmp
-  mkdir -p $tmp
-  cd $tmp
-
-  log fetch $url
-  curl -L# $url | tar -zx --strip 1
-
-  scons all && scons --prefix $dir $config install
-
-  # cleanup
-  rm -rf $tmp
-  echo $config > "$dir/.config"
-
-  activate $version
-}
-
-
-# Determine tarball url for <version>
-build_download_url() {
+# make tarball url for <version>
+get_version_url() {
   local version=$1
-  local uname=`uname -a`
-  local arch=`uname -m`
-  local os=`uname`
+  local arch="x86"
+  local os
 
-  case "$uname" in
-    Darwin*) os=osx ;;
-     Linux*) os=linux ;;
-     SunOS*) os=sunos5 ;;
+  case $OSTYPE in
+    darwin*) os="osx" ;;
+     linux*) os="linux" ;;
+     sunos*) os="sunos5" ;;
+  esac
+
+  case $(uname -a) in
+    *x86_64*) arch="x86_64" ;;
+    *i686*) arch="i686" ;;
+    *i386*) arch="i386" ;;
   esac
 
   echo "http://fastdl.mongodb.org/$os/mongodb-$os-$arch-$version.tgz"
 }
 
 
-# Activate <version>
-activate() {
-  local version=$1
+get_all_versions() {
+  local os
 
-  if test "$version" != "`get_active_version`"; then
-    cp -fR $VERSIONS_DIR/$version/bin $MONGODB_PATH
-    log activate "`mongo --version` is now active"
-  fi
+  case $OSTYPE in
+    darwin*) os="osx" ;;
+     linux*) os="linux" ;;
+     sunos*) os="sunos5" ;;
+  esac
+
+  semver $(curl -# -L https://www.mongodb.org/dl/$os 2> /dev/null) | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
+}
+
+get_latest_version() {
+  get_all_versions | egrep -o '[0-9]+\.[0-9]*[02468]+\.[a-zA-Z0-9-]+' | tail -n 1
+}
+
+get_unstable_version() {
+  get_all_versions | tail -n 1
 }
 
 
-# Remove <versions ...>
-remove_versions() {
-  test -z $1 && abort "version(s) required"
+config() {
+  local file="$MONGODB_PATH/mongodb.conf"
+  local sample="
+# For configuration options checkout:
+# http://docs.mongodb.org/manual/reference/configuration-options/
 
-  while test $# -ne 0; do
-    if [ $1 == `get_active_version` ]; then
-      log remove "active version $1."
-      log remove "Please change versions before removing."
-    else
-      rm -rf $VERSIONS_DIR/$1
-      log removed mongodb v$1
-    fi
+systemLog:
+  destination: file
+  path: $MONGODB_PATH/mongodb.log
+  timeStampFormat: iso8601-utc
 
-    shift
-  done
+storage:
+  dbPath: $MONGODB_PATH/data
+  directoryPerDB: true
+"
+
+  if [ -f "$file" ]; then
+    ask "File $file exists, overwrite it?" "" "exit"
+  fi
+
+  echo "$sample" > "$file"
+
+  ask "Edit $file?" "vi $file"
 }
 
 
 # Run mongod
-run_mongod() {
-  local version=${1#v}; shift
-  local config=$@
-  local bin=$VERSIONS_DIR/$version/bin/mongod
-  local config_file=$MONGODB_PATH/mongodb.conf
+run() {
+  local version="$1"
 
-  test -f $bin || abort "$version is not installed"
+  if [ -z "$version" ]; then
+    local versions=$(get_installed_versions)
+    local selected=$(get_installed_versions | head -n 1)
 
-  if [ -z "$config" ] && [ -f "$config_file" ]; then
-    config="--config $config_file"
+    list_select "$versions" "$selected" run_version
   fi
 
   $bin $config
 }
 
 
-# Display mongo  versions
-start_mongod() {
-  if [ $# -eq 0 ]; then
-    display_version_selection run_mongod
-  else
-    run_mongod $@
-  fi
-}
+run_version() {
+  local version="$1"
+  local bin="$MONGODB_VERSIONS/$version/bin/mongod"
+  local config_file="$MONGODB_PATH/mongodb.conf"
+  local config
 
-
-create_config_file() {
-  local db=$MONGODB_PATH/data
-  local file="$MONGODB_PATH/mongodb.conf"
-  local logfile="$MONGODB_PATH/mongodb.log"
-
-  test -d $db || mkdir -p $db
-  log "dbpath" $db
-
-  cat > $file <<EOF
-# For configuration options checkout:
-# http://docs.mongodb.org/manual/reference/configuration-options/
-
-# Where to store the data
-dbpath=$db
-
-# Logging output
-logappend=true
-logpath=$logfile
-
-EOF
-
-  log config $file
-}
-
-
-setup_config() {
-  if [ -f $MONGODB_PATH/mongodb.conf ]; then
-    ask "File $MONGODB_PATH/mongodb.conf exists, overwrite it?" create_config_file
-  else
-    create_config_file
+  if [ ! -f "$bin" ]; then
+    echo "MongoDB $version is not installed" && exit
   fi
 
-  ask "Edit $MONGODB_PATH/mongodb.conf?" "vi $MONGODB_PATH/mongodb.conf"
-
-  exit;
+  $bin $([ -f "$config_file" ] && echo "-f $config_file") &
 }
 
 
 # Output usage information.
-display_help() {
-  cat <<EOF
-
-  Usage: mvm [command] [args] [options]
+help() {
+  echo "
+  Usage: mvm <command> <options>
 
   Commands:
-
-    mvm                            Output versions installed
-    mvm list                       Output the versions of mongodb available
-    mvm install latest [config]    Install the latest mongodb release
-    mvm install stable [config]    Install the latest stable mongodb release
-    mvm install <version> [config] Install mongodb <version>
-    mvm source <version> [config]  Install mongodb <version> from source
-    mvm remove <version>           Remove the given version(s)
-    mvm config                     Creates a mongodb.conf file in $MONGODB_PATH/
-    mvm start <version> [config]   Starts a mongod process, if [config] is not passed it
-                                   will look for a $MONGODB_PATH/mongodb.conf file
-
-  Options:
-
-    -v, --version   Output current version
-    -h, --help      Display help information
-    --latest        Output the latest stable mongodb version available
+    list               List the installed versions
+    install <version>  Install specific version
+                       <version> could be 'latest', 'unstable', '0.12.01'
+    remove <version>   Remove the given version(s)
+    remove <version>   Remove specific version
+    run <version>      Execute specific version
+    config             Add configuration file
+    help               Display help
 
   Aliases:
-
-    list    ls
-    install i
-    remove  rm
-
-EOF
-  exit
+    ls  list
+    i   install
+    rm  remove
+    h   help
+"
 }
 
+main() {
+  local command=$1
 
-# Handle arguments
-if test $# -eq 0; then
-  test "`ls -l $VERSIONS_DIR | grep ^d`" || abort "no installed version"
-  display_version_selection activate && exit;
-else
-  case $1 in
-      ls|list) display_versions "`get_all_versions`"  `get_active_version`; exit ;;
-     --latest) get_latest_stable_version $2; exit ;;
-    i|install) shift; install $@; exit ;;
-       source) shift; install_from_source $@; exit ;;
-    rm|remove) shift; remove_versions $@; exit ;;
-       config) setup_config $@; exit ;;
-        start) shift; start_mongod $@; exit ;;
-    -v|--version) echo $VERSION ;;
-    -h|--help|*) display_help ;;
+  # create folders if not available
+  [ -d "$MONGODB_VERSIONS" ] || mkdir -p "$MONGODB_VERSIONS"
+  [ -d "$MONGODB_PATH/data" ] || mkdir -p "$MONGODB_PATH/data"
+
+  # parse arguments
+  case $command in
+        ls|list) list;;
+      i|install) shift; install $@;;
+      rm|remove) shift; remove $@;;
+         config) shift; config $@;;
+            run) shift; run $@;;
+    -h|--help|*) help;;
   esac
-fi
+}
+
+main $@
