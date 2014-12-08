@@ -2,6 +2,9 @@
 .git
 node_modules
 
+# vi temporary file
+*un~
+
 # OSX specific
 .Spotlight-V100
 .Trashes

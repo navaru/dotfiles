@@ -1,5 +1,5 @@
 [user]
-	name = Eugen Tudorancea
+  name = Eugen Tudorancea
   email = eugen.tudorancea@gmail.com
 
 # set your user tokens as enivornment variables, such as ~/.secrets
@@ -64,6 +64,9 @@
   rc = rebase --continue            # continue rebase
   rs = rebase --skip                # skip rebase
 
+  # merge
+  m = merge
+
   # remote
   r = remote -v                     # show remotes (verbose)
 
@@ -107,7 +110,7 @@
 
 [core]
   autocrlf = false
-  editor = vi
+	editor = /usr/bin/vim
 	excludesfile = ~/.gitignore
 	quotepath = false
 
@@ -123,6 +126,3 @@
   # Remember my merges
   # http://gitfu.wordpress.com/2008/04/20/git-rerere-rereremember-what-you-did-last-time/
   enabled = true
-
-[credential]
-	helper = osxkeychain
