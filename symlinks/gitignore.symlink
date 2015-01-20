@@ -1,5 +1,6 @@
 # Ignore .git folders by default
 .git
+.rnpm
 node_modules
 
 # vi temporary file

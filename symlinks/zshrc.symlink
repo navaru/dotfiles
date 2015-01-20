@@ -18,3 +18,4 @@ for app in $APPS_PATH/*; do
   [ -d $app/sbin ] && PATH="${app}/sbin:$PATH"
   [ -d $app/share/man ] && MANPATH="${app}/share/man:$MANPATH"
 done
+export PATH="$(brew --prefix homebrew/php/php55)/sbin:$PATH"

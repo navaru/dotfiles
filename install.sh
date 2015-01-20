@@ -2,11 +2,15 @@
 
 set -e
 
+# dotfiles path
+if [ -n "$DOTFILES" ]; then
+  DOTFILES="$HOME/.dotfiles"
+fi
+
 # set path where apps will be installed
 if [ -n "$APPS_PATH" ]; then
   APPS_PATH="$HOME/.apps"
 fi
-
 
 # parse a string and return the version
 semver() {
@@ -65,6 +69,25 @@ git_setup() {
 }
 
 
+# create symlinks to files from: dotfiles/symlinks
+create_symlinks() {
+  local symlinks=$(find $DOTFILES -name "*.symlink")
+
+  for symlink in $symlinks; do
+    local filename=$(basename $symlink)
+    local file=$HOME/.${filename%.*}
+
+    # if file exists, create backup
+    if [ -f $file ] || [ -L $file ]; then
+      mv "$file" "$file.backup"
+    fi
+
+    ln -s "$symlink" "$file"
+    log "Created symlink: $file"
+  done
+}
+
+
 main() {
   # create apps path if not available
   [ -d "$APPS_PATH" ] || mkdir -p "$APPS_PATH"
@@ -72,10 +95,17 @@ main() {
   git_setup
 
   # install & setup dotfiles
-  git clone https://github.com/navaru/dotfiles.git $HOME/.dotfiles2
+  git clone https://github.com/teugen/dotfiles.git "$DOTFILES"
 
-  # initiate setup
-  $HOME/.dotfiles/setup.sh --clean
+  # create symlink to .files
+  create_symlinks
+
+  # parse options
+  for option in $@; do
+    case $option in
+      -c|--clean) clean;;
+    esac
+  done
 }
 
 main $@

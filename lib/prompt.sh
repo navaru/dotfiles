@@ -36,7 +36,7 @@ git_prompt() {
 
 
 prompt() {
-  local pwd="$(set_text blue $PWD)"
+  local pwd="$(set_text blue ${PWD/#$HOME/\~})"
   local cmd=" ▸ "
 
   local prompt="\n$pwd$(git_prompt)\n$cmd"
