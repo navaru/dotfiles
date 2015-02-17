@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 # check if a command exists
-is_command() {
+is_command () {
   which $1 &> /dev/null
 }
 
 
 # Parse end return only the semver format
-semver() {
+semver () {
   echo $@ | egrep -o '[0-9]*[.][0-9]*[.][0-9]*([0-9A-Za-z-]*)'
 }
 
@@ -17,7 +17,7 @@ semver() {
 # example:
 #   list_select "item1 item2 item3" "item2" "do_something"
 #
-list_select() {
+list_select () {
   local items=$1; shift
   local list=($items)
   local length=${#list[@]}
@@ -66,34 +66,50 @@ list_select() {
 ##########################################################################################
 
 
-NODEJS_PATH="$APPS_PATH/node.js"
-NODEJS_VERSIONS="$NODEJS_PATH/versions"
+IOJS_PATH="$APPS_PATH/io.js"
+IOJS_VERSIONS="$IOJS_PATH/versions"
+IOJS_URL="https://iojs.org/dist"
 
 
-get_installed_versions() {
-  semver $(ls -d $NODEJS_VERSIONS/*) | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
+get_installed_versions () {
+  semver $(ls -d $IOJS_VERSIONS/*) | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
 }
 
 
-get_active_version() {
-  if is_command "node"; then
-    semver $(node --version)
+get_all_versions () {
+  curl -L -s $IOJS_URL/index.tab -o - \
+    | command sed 1d \
+    | command sed "s/^/iojs-/" \
+    | command cut -f1 \
+    | command sed "s/^iojs-v//" \
+    | command sort
+}
+
+
+get_latest_version () {
+  get_all_versions | tail -n 1
+}
+
+
+get_active_version () {
+  if is_command "iojs"; then
+    semver $(iojs --version)
   else
-    echo "node.js not installed"
+    echo "io.js not installed"
   fi
 }
 
 
-set_version() {
+set_version () {
   local version=$1
 
-  echo "Setting node.js version ..."
-  cp -R -f $NODEJS_VERSIONS/$version/* "$NODEJS_PATH"
-  echo "Active node.js version: $(get_active_version)"
+  echo "Setting io.js version ..."
+  cp -R -f $IOJS_VERSIONS/$version/* "$IOJS_PATH"
+  echo "Active io.js version: $(get_active_version)"
 }
 
 
-list() {
+list () {
   local versions=$(get_installed_versions)
   local active=$(get_active_version)
 
@@ -101,20 +117,19 @@ list() {
 }
 
 
-install() {
+install () {
   local version="$1"
 
   case $version in
-      latest) version=$(get_latest_version) ;;
-    unstable) version=$(get_unstable_version) ;;
+    latest) version=$(get_latest_version) ;;
   esac
 
-  local dir="$NODEJS_VERSIONS/$version"
+  local dir="$IOJS_VERSIONS/$version"
   local url=$(get_version_url $version)
 
   # is version installed?
   if [ -d "$dir" ]; then
-    echo "Node.js $version already installed"
+    echo "io.js $version already installed"
   else
     mkdir -p "$dir" && cd $_
 
@@ -127,7 +142,7 @@ install() {
 
 
 # make tarball url for <version>
-get_version_url() {
+get_version_url () {
   local version=$1
   local arch="x86"
   local os
@@ -135,46 +150,32 @@ get_version_url() {
   case $OSTYPE in
     darwin*) os=darwin ;;
      linux*) os=linux ;;
-     sunos*) os=sunos ;;
   esac
 
   case $(uname -a) in
     *x86_64*) arch=x64 ;;
-    *armv6l*) arch=arm-pi ;;
+    *armv*) arch=armv71 ;;
   esac
 
-  echo "http://nodejs.org/dist/v$version/node-v$version-$os-$arch.tar.gz"
+  echo "$IOJS_URL/v$version/iojs-v$version-$os-$arch.tar.gz"
 }
 
 
-run() {
+run () {
   local version="$1"; shift
   local arguments="$@"
-  local node="$NODEJS_VERSIONS/$version/bin/node"
+  local bin="$IOJS_VERSIONS/$version/bin/iojs"
 
-  if [ -f "$node" ]; then
+  if [ -f "$bin" ]; then
     shift;
-    $node $arguments
+    $bin $arguments
   else
-    echo "Node.js $version not installed"
+    echo "io.js $version not installed"
   fi
 }
 
 
-get_all_versions() {
-  semver $(curl -# -L http://nodejs.org/dist/ 2> /dev/null) | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
-}
-
-get_latest_version() {
-  get_all_versions | egrep -o '[0-9]+\.[0-9]*[02468]+\.[a-zA-Z0-9-]+' | tail -n 1
-}
-
-get_unstable_version() {
-  get_all_versions | tail -n 1
-}
-
-
-remove() {
+remove () {
   local version=$1
 
   if [ -z $version ]; then
@@ -187,20 +188,19 @@ remove() {
   fi
 }
 
-remove_version() {
-  rm -rf "$NODEJS_VERSIONS/$1" && echo "Node.js $1 removed"
+remove_version () {
+  rm -rf "$IOJS_VERSIONS/$1" && echo "io.js $1 removed"
 }
 
 
-help() {
+help () {
   echo "
-  Usage: nvm <command> <options>
+  Usage: iom <command> <options>
 
   Commands:
     list               List the installed versions
     install            Install the latest stable release
-    install <version>  Install specific version
-                       <version> could be 'latest', 'unstable', '0.12.01'
+    install <version>  Install specific version or 'latest'
     remove <version>   Remove specific version
     run <version>      Execute specific version
     help               Display help
@@ -214,15 +214,16 @@ help() {
 }
 
 
-main() {
+main () {
   local command=$1
 
   # create folders if not available
-  [ -d "$NODEJS_VERSIONS" ] || mkdir -p "$NODEJS_VERSIONS"
+  [ -d "$IOJS_VERSIONS" ] || mkdir -p "$IOJS_VERSIONS"
 
   # parse arguments
   case $command in
         ls|list) list;;
+       versions) get_all_versions;;
       i|install) shift; install $@;;
       rm|remove) shift; remove $@;;
             run) shift; run $@;;

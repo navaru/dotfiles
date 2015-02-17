@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Script based on:
+# http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/
+
+add_package () {
+  # Import the public key used by the package management system
+  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+
+  # Create a list file for MongoDB.
+  echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | tee /etc/apt/sources.list.d/mongodb.list
+
+  # Reload local package database
+  apt-get update
+}
+
+
+check_package () {
+  local cmd="apt-get --simulate install mongodb-org"
+
+  if ${cmd}; then
+    echo "Installing mongodb ..."
+  else echo "oops, something happened"
+    add_package
+  fi
+}
+
+
+main () {
+  local version="$1"
+  local install="apt-get install -y"
+
+  # check if mongodb package exists
+  check_package
+
+  if [ -n "$version" ]; then
+    cmd=" \
+      $install \
+      mongodb-org=$version \
+      mongodb-org-server=$version \
+      mongodb-org-shell=$version \
+      mongodb-org-mongos=$version \
+      mongodb-org-tools=$version \
+      "
+  else
+    cmd="$install mongodb-org"
+  fi
+
+  ${cmd}
+}
+
+
+main $@
