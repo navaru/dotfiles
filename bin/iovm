@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 # check if a command exists
-is_command () {
-  which $1 &> /dev/null
+is_command() {
+  hash $1 2>/dev/null
 }
 
 
 # Parse end return only the semver format
-semver () {
+semver() {
   echo $@ | egrep -o '[0-9]*[.][0-9]*[.][0-9]*([0-9A-Za-z-]*)'
 }
 
@@ -17,7 +17,7 @@ semver () {
 # example:
 #   list_select "item1 item2 item3" "item2" "do_something"
 #
-list_select () {
+list_select() {
   local items=$1; shift
   local list=($items)
   local length=${#list[@]}
@@ -63,20 +63,25 @@ list_select () {
 }
 
 
-##########################################################################################
+###############################################################################
 
+
+if [ ! -n "$APPS_PATH" ]; then
+  echo "APPS_PATH not defined"
+  exit 1
+fi
 
 IOJS_PATH="$APPS_PATH/io.js"
 IOJS_VERSIONS="$IOJS_PATH/versions"
 IOJS_URL="https://iojs.org/dist"
 
 
-get_installed_versions () {
+get_installed_versions() {
   semver $(ls -d $IOJS_VERSIONS/*) | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
 }
 
 
-get_all_versions () {
+get_all_versions() {
   curl -L -s $IOJS_URL/index.tab -o - \
     | command sed 1d \
     | command sed "s/^/iojs-/" \
@@ -86,12 +91,12 @@ get_all_versions () {
 }
 
 
-get_latest_version () {
+get_latest_version() {
   get_all_versions | tail -n 1
 }
 
 
-get_active_version () {
+get_active_version() {
   if is_command "iojs"; then
     semver $(iojs --version)
   else
@@ -100,7 +105,7 @@ get_active_version () {
 }
 
 
-set_version () {
+set_version() {
   local version=$1
 
   echo "Setting io.js version ..."
@@ -109,7 +114,7 @@ set_version () {
 }
 
 
-list () {
+list() {
   local versions=$(get_installed_versions)
   local active=$(get_active_version)
 
@@ -117,7 +122,7 @@ list () {
 }
 
 
-install () {
+install() {
   local version="$1"
 
   case $version in
@@ -142,7 +147,7 @@ install () {
 
 
 # make tarball url for <version>
-get_version_url () {
+get_version_url() {
   local version=$1
   local arch="x86"
   local os
@@ -161,7 +166,7 @@ get_version_url () {
 }
 
 
-run () {
+run() {
   local version="$1"; shift
   local arguments="$@"
   local bin="$IOJS_VERSIONS/$version/bin/iojs"
@@ -175,7 +180,7 @@ run () {
 }
 
 
-remove () {
+remove() {
   local version=$1
 
   if [ -z $version ]; then
@@ -188,12 +193,12 @@ remove () {
   fi
 }
 
-remove_version () {
+remove_version() {
   rm -rf "$IOJS_VERSIONS/$1" && echo "io.js $1 removed"
 }
 
 
-help () {
+help() {
   echo "
   Usage: iom <command> <options>
 
@@ -214,7 +219,7 @@ help () {
 }
 
 
-main () {
+main() {
   local command=$1
 
   # create folders if not available
@@ -230,5 +235,6 @@ main () {
     -h|--help|*) help;;
   esac
 }
+
 
 main $@

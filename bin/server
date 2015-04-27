@@ -137,7 +137,7 @@ var main = function () {
       return;
     }
 
-    path.exists(file, function (yes) {
+    fs.exists(file, function (yes) {
       if (yes) {
         fs.stat(file, function (err, stat) {
           if (stat.isDirectory()) {

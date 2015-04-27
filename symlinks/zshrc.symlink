@@ -1,10 +1,9 @@
-# Setup
 export DOTFILES="$HOME/.dotfiles"
-export APPS_PATH="$HOME/.apps"
+export APPS_PATHe="$HOME/.apps"
 
 PATH="$DOTFILES/bin:$PATH"
 
-# Allow the discovery of locally installed bin node modules
+# Allow the discovery of locally installed bin io.js modules
 PATH="./node_modules/.bin:$PATH"
 
 source $DOTFILES/lib/functions.sh
@@ -18,4 +17,8 @@ for app in $APPS_PATH/*; do
   [ -d $app/sbin ] && PATH="${app}/sbin:$PATH"
   [ -d $app/share/man ] && MANPATH="${app}/share/man:$MANPATH"
 done
-export PATH="$(brew --prefix homebrew/php/php55)/sbin:$PATH"
+
+# Load OS specific config
+case $OSTYPE in
+  darwin*) source $DOTFILES/osx/zshrc;;
+esac

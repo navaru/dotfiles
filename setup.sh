@@ -2,8 +2,13 @@
 
 set -e
 
-DOTFILES_REPOSITORY = "https://github.com/teugen/dotfiles.git"
-DOTFILES = "$HOME/.dotfiles"
+DOTFILES_REPOSITORY="https://github.com/teugen/dotfiles.git"
+DOTFILES="$HOME/.dotfiles"
+
+
+is_command() {
+  hash $1 2>/dev/null
+}
 
 
 # create symlinks to files from: dotfiles/symlinks
@@ -33,13 +38,15 @@ clean() {
 
 
 main() {
-  if ! hash gitsda 2>/dev/null; then
+  if ! is_command git; then
     echo "You need to install git first"
     exit 1
   fi
 
-  # install & setup dotfiles
-  git clone "$DOTFILES_REPOSITORY" "$DOTFILES"
+  # clone repo if not available
+  if [ ! -d "$DOTFILES" ]; then
+    git clone "$DOTFILES_REPOSITORY" "$DOTFILES"
+  fi
 
   # create symlink to .files
   create_symlinks

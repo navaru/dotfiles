@@ -2,7 +2,7 @@
 
 # check if a command exists
 is_command() {
-  which $1 &> /dev/null
+  hash $1 2>/dev/null
 }
 
 
@@ -79,8 +79,13 @@ ask() {
 }
 
 
-##########################################################################################
+###############################################################################
 
+
+if [ ! -n "$APPS_PATH" ]; then
+  echo "APPS_PATH not defined"
+  exit 1
+fi
 
 MONGODB_PATH="$APPS_PATH/mongodb"
 MONGODB_VERSIONS="$MONGODB_PATH/versions"
@@ -265,6 +270,7 @@ help() {
 "
 }
 
+
 main() {
   local command=$1
 
@@ -282,5 +288,6 @@ main() {
     -h|--help|*) help;;
   esac
 }
+
 
 main $@

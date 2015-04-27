@@ -2,7 +2,7 @@
 
 # check if a command exists
 is_command() {
-  which $1 &> /dev/null
+  hash $1 2>/dev/null
 }
 
 
@@ -63,8 +63,13 @@ list_select() {
 }
 
 
-##########################################################################################
+###############################################################################
 
+
+if [ ! -n "$APPS_PATH" ]; then
+  echo "APPS_PATH not defined"
+  exit 1
+fi
 
 REDIS_PATH="$APPS_PATH/redis"
 REDIS_VERSIONS="$REDIS_PATH/versions"
@@ -220,5 +225,6 @@ main() {
     -h|--help|*) help;;
   esac
 }
+
 
 main $@
