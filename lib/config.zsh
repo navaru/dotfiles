@@ -2,12 +2,10 @@ export LSCOLORS="Gxfxcxdxbxegedabagacad" # ls colors
 export GREP_OPTIONS='--color=auto' # Color grep results
 export GREP_COLOR='1;32'
 
-
 autoload colors; colors;
 autoload -U compinit
 
 compinit
-
 
 setopt AUTO_LIST
 setopt AUTO_MENU
@@ -54,12 +52,10 @@ bindkey '[C' forward-word   # ctrl + right
 #Disable core dumps
 limit coredumpsize 0
 
-#自动补全功能
-
 # Completion caching
 zstyle ':completion::complete:*' use-cache on
 zstyle ':completion::complete:*' cache-path .zcache
-# zstyle ':completion:*:cd:*' ignore-parents parent pwd
+ zstyle ':completion:*:cd:*' ignore-parents parent pwd
 zstyle ':completion:*:cd:*' ignore-parents parent tag-order local-directories directory-stack path-directories
 
 #Completion Options

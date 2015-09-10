@@ -32,5 +32,5 @@ alias ip-lan="ifconfig -a | grep -oE '([0-9]{1,3}[\.]){3}[0-9]{1,3}'"
 # Enhanced WHOIS lookups
 alias whois="whois -h whois-servers.net"
 
-# Shotcut for node harmony
-alias nodeh="node --harmony"
+# Shotcut for node ECMAScript 6
+alias es="babel-node"
