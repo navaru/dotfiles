@@ -1,14 +1,15 @@
-source $DOTFILES/lib/config.zsh
-source $DOTFILES/lib/functions.sh
-source $DOTFILES/lib/aliases.sh
-source $DOTFILES/lib/prompt.sh
-
 export DOTFILES="$HOME/.dotfiles"
 export APPS_PATH="$HOME/.apps"
 
 PATH="$DOTFILES/bin:$PATH"
 
+source $DOTFILES/lib/config.zsh
+source $DOTFILES/lib/functions.sh
+source $DOTFILES/lib/aliases.sh
+source $DOTFILES/lib/prompt.sh
+
 # Allow the discovery of locally installed bin io.js modules
+N_PREFIX="$APPS_PATH/node"
 PATH="./node_modules/.bin:$PATH"
 
 # Add to $PATH installed apps from $APPS_PATH
