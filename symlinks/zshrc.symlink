@@ -9,7 +9,7 @@ source $DOTFILES/lib/aliases.sh
 source $DOTFILES/lib/prompt.sh
 
 # Allow the discovery of locally installed bin io.js modules
-N_PREFIX="$APPS_PATH/node"
+export N_PREFIX="$APPS_PATH/node"
 PATH="./node_modules/.bin:$PATH"
 
 # Add to $PATH installed apps from $APPS_PATH
