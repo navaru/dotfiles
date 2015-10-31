@@ -12,6 +12,6 @@ dotfiles
 To install run:
 
 ```
-> curl https://raw.githubusercontent.com/teugen/dotfiles/master/install.sh | bash
+> curl https://raw.githubusercontent.com/teugen/dotfiles/master/setup.sh | bash
 ```
 
