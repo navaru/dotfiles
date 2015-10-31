@@ -127,7 +127,7 @@ install() {
   local version="$1"
 
   case $version in
-      latest) version=$(get_latest_version) ;;
+      stable) version=$(get_latest_version) ;;
     unstable) version=$(get_unstable_version) ;;
   esac
 
@@ -138,7 +138,6 @@ install() {
   if [ -d "$dir" ]; then
     echo  "MongoDB $version already installed"
   else
-
     mkdir -p "$dir" && cd $_
 
     # download and unarchive source
@@ -184,7 +183,7 @@ get_all_versions() {
 }
 
 get_latest_version() {
-  get_all_versions | egrep -o '[0-9]+\.[0-9]*[02468]+\.[0-9]+' | tail -n 1
+  get_all_versions | egrep -o '[0-9]*[.][0-9]*[02468]*[.][0-9]*([0-9A-Za-z-]*)' | tail -n 1
 }
 
 get_unstable_version() {
@@ -254,10 +253,10 @@ help() {
 
   Commands:
     list               List the installed versions
+    versions           Get all available versions
     install <version>  Install specific version
-                       <version> could be 'latest', 'unstable', '0.12.01'
-    remove <version>   Remove the given version(s)
-    remove <version>   Remove specific version
+                       <version> could be 'stable', 'unstable', '3.2.0'
+    remove <version>   Remove specific version(s)
     run <version>      Execute specific version
     config             Add configuration file
     help               Display help
@@ -283,6 +282,7 @@ main() {
         ls|list) list;;
       i|install) shift; install $@;;
       rm|remove) shift; remove $@;;
+       versions) shift; get_all_versions;;
          config) shift; config $@;;
             run) shift; run $@;;
     -h|--help|*) help;;
