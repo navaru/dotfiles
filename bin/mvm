@@ -92,7 +92,7 @@ MONGODB_VERSIONS="$MONGODB_PATH/versions"
 
 
 get_installed_versions() {
-  semver $(ls -d $MONGODB_VERSIONS/*) | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
+  semver $(ls -d $MONGODB_VERSIONS/*)
 }
 
 
