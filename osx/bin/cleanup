@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Recursively delete .DS_Store and Icon? files
+find . -type f -name '*.DS_Store' -ls -delete
+find . -type f -name '*Icon?' -ls -delete

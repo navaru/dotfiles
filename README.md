@@ -1,17 +1,10 @@
-dotfiles
-========
+## dotfiles
 
-[WIP] Default setup for OS environments
+Shell setup for OS environments
 
-#### TODO:
-
-- Implement [humanism.sh]( https://github.com/cyphunk/humanism.sh/blob/master/humanism.sh)
-- Rewrite the installer
-
-
-To install run:
+#### Install:
 
 ```
-> curl https://raw.githubusercontent.com/teugen/dotfiles/master/setup.sh | bash
+> curl https://raw.githubusercontent.com/ugin/dotfiles/master/setup.sh | bash
 ```
 

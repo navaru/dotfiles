@@ -1,0 +1,25 @@
+#!/bin/bash
+
+get_os_name() {
+  local uname=$(uname -a)
+  local os
+
+  shopt -s nocasematch
+
+  if [[ $uname =~ .*ubuntu.* ]]; then
+     os="ubuntu"
+  fi
+
+  if [[ $uname =~ .*centos.* ]]; then
+     os="centos"
+  fi
+
+  if [[ $uname =~ .*darwin.* ]]; then
+     os="darwin"
+  fi
+
+  echo $os
+}
+
+
+get_os_name $@
