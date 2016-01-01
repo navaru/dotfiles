@@ -18,6 +18,8 @@ function git_status
       set_color yellow
     case '*Changes to be committed*'
       set_color green
+    case '*nothing to commit*'
+      set_color white
   end
 
   printf '◉'
