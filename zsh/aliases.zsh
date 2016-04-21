@@ -20,10 +20,5 @@ alias ip-lan='ifconfig -a | grep -oE "([0-9]{1,3}[\.]){3}[0-9]{1,3}"'
 # Enhanced WHOIS lookups
 alias whois='whois -h whois-servers.net'
 
-# Shotcut for node ECMAScript 6
-alias es='babel-node'
-
-# Docker
-alias dkr='docker'
-alias dm='docker-machine'
-alias dcom='docker-compose'
+# Reload fish
+alias reload="source ~/.zshrc"

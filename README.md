@@ -1,10 +1,9 @@
 ## dotfiles
 
-Shell setup for OS environments
+Minimal shell setup based on `zsh`.
 
 #### Install:
 
 ```
-> curl https://raw.githubusercontent.com/ugin/dotfiles/master/setup.sh | bash
+> curl https://raw.githubusercontent.com/ugin/dotfiles/master/install.sh | bash
 ```
-

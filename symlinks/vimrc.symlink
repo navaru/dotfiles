@@ -1,46 +1,41 @@
-" Enable vi uncompatible mode, to enable more features, must come first because it changes other options.
-set nocompatible
+" Enable vi uncompatible mode, to enable more features
+" must come first because it changes other options.
 set encoding=utf-8
+set nocompatible
+
 
 " Automatic reload of .vimrc after editing
 autocmd BufWritePost .vimrc source ~/.vimrc
 
-" Show trailing whitespace
-" autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-" autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
 " History settings
-set history=500
-set undolevels=500
+set history=10000
+set undolevels=10000
 set pastetoggle=<F2>
 
-
-" Mouse and backspace
-set mouse=a  " on OSX press ALT and Click
-set bs=2     " make backspace behave like normal again
-
-
-" Disable backup knd swap files - they trigger too many events on filesystem watchers
-set nobackup
-set nowritebackup
-set noswapfile
 
 " No beeping
 set visualbell
 
 
-" Enable vim to remember undo chains between sessions (> 8.3)
-if v:version >= 704
-  set undofile
-  let &undodir=&directory
-endif
+" Mouse and backspace
+" on OSX press ALT and Click
+set mouse=a
+" make backspace behave like normal again
+set bs=2
+
+
+" Disable backup kind swap files
+" they trigger too many events on filesystem watchers
+set nobackup
+set nowritebackup
+set noswapfile
+
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 
 
 

@@ -21,5 +21,4 @@ get_os_name() {
   echo $os
 }
 
-
 get_os_name $@
