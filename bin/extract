@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Extracts archived files / mounts disk images
 # Usage: extract <file>
