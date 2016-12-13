@@ -1,0 +1,4 @@
+# disable Cmd-Shift-I shortcut on Chrome from opening Mac Mail
+defaults write com.google.Chrome NSUserKeyEquivalents -dict-add 'Email Page Location' '\0'
+killall cfprefsd
+killall Finder

@@ -18,7 +18,7 @@ git_status() {
     return
   fi
 
-  echo $(set_text $color "◉")
+  echo $(set_text $color "●")
 }
 
 
