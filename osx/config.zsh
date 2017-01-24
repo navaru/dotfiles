@@ -1,3 +1,8 @@
+# ensure you are using the brew installed versions
+# make sure /usr/local/sbin is before /usr/sbin in your PATH
+PATH="/usr/local/sbin:$PATH"
+
+
 # OSX scripts path
 export SCRIPTS="$(dirname $0)/bin"
 

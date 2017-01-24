@@ -25,32 +25,6 @@ const color = {
 }
 
 
-const old = `
-  .header_header {
-    top: 0;
-    right: 0;
-    left: 0;
-  }
-
-  .tabs_title {
-    color: #6d8794;
-  }
-  .tab_textActive {
-    color: #6d8794;
-    font-weight: bold;
-  }
-  .tab_active:before {
-    border-color: rgba(106, 168, 230, 0.6);
-  }
-  .tab_tab.tab_hasActivity {
-    color: #4078f2 !important;
-  }
-  .splitpane_divider {
-    background-color: rgb(211, 215, 220) !important;
-  }
-`
-
-
 const css = `
   .header_header {
     top: 0;
@@ -128,16 +102,16 @@ module.exports = {
   plugins: [
     'hyper-blink',
     'hypercwd',
-    // 'hyperterm-tab-icons',
   ],
+
   config: {
-    fontSize: 12,
-    fontFamily: '"Source Code Pro", Menlo, monospace',
-    padding: '.25em',
     shell: '/usr/local/bin/zsh',
 
-    css, // main window
-    termCSS, // terminal window
+    fontSize: 13,
+    fontFamily: '"Source Code Pro", Menlo, monospace',
+    padding: '.25em',
+    css, 
+    termCSS,
 
     colors: [
       color.black,
