@@ -27,6 +27,7 @@ export PATH=$PATH:$GOROOT/bin
 
 # Export path last
 export PATH="$SCRIPTS:$NODE_BIN:$N_PREFIX/bin:$PATH"
+export PATH="$HOME/.yarn/bin:$PATH"
 
 
 echo "\n  Hello $(id -un)!"
