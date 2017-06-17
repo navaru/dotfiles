@@ -8,8 +8,17 @@ export SCRIPTS="$(dirname $0)/bin"
 
 
 # set node.js paths
-export N_PREFIX=$HOME/.node
-export NODE_BIN="./node_modules/.bin"
+export N_PREFIX="$HOME/.node"
+export NODE_YARN="$HOME/.yarn/bin"
+export NODE_GLOBAL="$N_PREFIX/bin"
+export NODE_LOCAL="./node_modules/.bin"
+export NODE_PATHS="$NODE_YARN:$NODE_LOCAL:$NODE_GLOBAL"
+
+
+# set php paths
+export COMPOSER_GLOBAL="$HOME/.composer/vendor/bin"
+export COMPOSER_LOCAL="./vendor/bin"
+export PHP_PATHS="$COMPOSER_GLOBAL:$COMPOSER_LOCAL"
 
 
 # Docker
@@ -26,8 +35,7 @@ export PATH=$PATH:$GOROOT/bin
 
 
 # Export path last
-export PATH="$SCRIPTS:$NODE_BIN:$N_PREFIX/bin:$PATH"
-export PATH="$HOME/.yarn/bin:$PATH"
+export PATH="$SCRIPTS:$NODE_PATHS:$PHP_PATHS:$PATH"
 
 
 echo "\n  Hello $(id -un)!"
