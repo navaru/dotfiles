@@ -1,4 +1,6 @@
-const color = {
+const shell = '/usr/local/bin/zsh'
+
+const colors = {
   cursor: '#23b4fd',
   background: '#fafafa',
   foreground: '#101010',
@@ -14,15 +16,17 @@ const color = {
   white: "#c0c5ce",
 
   // light
-  _black: "#263238",
-  _red: "#d32f2f",
-  _green: "#388e3c",
-  _yellow: "#f9a825",
-  _blue: "#1976d2",
-  _magenta: "#512da8",
-
-  _white: "#eff1f5",
+  lightBlack: "#263238",
+  lightRed: "#d32f2f",
+  lightGreen: "#388e3c",
+  lightYellow: "#f9a825",
+  lightBlue: "#1976d2",
+  lightMagenta: "#512da8",
+  lightWhite: "#eff1f5",
 }
+
+
+const termCSS = ``
 
 
 const css = `
@@ -50,16 +54,16 @@ const css = `
     background-color: #ccc;
   }
   .tab_tab {
-    color: ${ color.white } !important;
+    color: ${ colors.white } !important;
     border-color: #ccc !important;
   }
   .tab_tab.tab_active {
     font-weight: 500;
-    background-color: ${ color.background};
+    background-color: ${ colors.background};
     border-color: rgba(0, 0, 0, .25) !important;
   }
   .tab_tab.tab_active::before {
-    border-bottom-color: ${ color.background};
+    border-bottom-color: ${ colors.background};
   }
   .tab_tab::after {
     content: "";
@@ -80,61 +84,33 @@ const css = `
     transition-duration: .32s;
   }
   .tabs_title, .tab_icon, .tab_tab.tab_active {
-    color: ${ color._black } !important;
+    color: ${ colors.lightBlack } !important;
   }
   .tab_tab.tab_hasActivity {
-    color: ${ color.blue } !important;
+    color: ${ colors.blue } !important;
   }
 `
 
-const termCSS = `
-  x-screen {
-    overflow-y: hidden !important;
-  }
-
-  .cursor-node {
-    opacity: .4;
-  }
-`
 
 
 module.exports = {
   plugins: [
-    'hyper-blink',
     'hypercwd',
   ],
 
   config: {
-    shell: '/usr/local/bin/zsh',
+    css,
+    termCSS,
+    shell,
+    colors,
 
     fontSize: 13,
     fontFamily: '"Source Code Pro", Menlo, monospace',
     padding: '.25em',
-    css, 
-    termCSS,
 
-    colors: [
-      color.black,
-      color.red,
-      color.green,
-      color.yellow,
-      color.blue,
-      color.magenta,
-      color.cyan,
-      color.white,
-      color._black,
-      color._red,
-      color._green,
-      color._yellow,
-      color._blue,
-      color._magenta,
-      color._cyan,
-      color._white,
-    ],
-
-    foregroundColor: color.foreground,
-    backgroundColor: color.background,
-    cursorColor: color.cursor,
-    borderColor: color.background,
+    foregroundColor: colors.foreground,
+    backgroundColor: colors.background,
+    cursorColor: colors.cursor,
+    borderColor: colors.background,
   }
 }

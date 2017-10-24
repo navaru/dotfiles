@@ -34,7 +34,7 @@ export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$GOROOT/bin
 
 
-# Export path last
+# Export PATH last
 export PATH="$SCRIPTS:$NODE_PATHS:$PHP_PATHS:$PATH"
 
 
