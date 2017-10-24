@@ -9,7 +9,7 @@ export NODE_LOCAL="./node_modules/.bin"
 
 
 # Export PATH last
-export PATH="$NODE_YARN:$NODE_LOCAL:$NODE_GLOBAL"
+export PATH="$PATH:$NODE_YARN:$NODE_LOCAL:$NODE_GLOBAL"
 
 
 echo "\n  Hello $(id -un)!"
