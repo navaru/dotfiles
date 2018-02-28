@@ -6,6 +6,10 @@ get_os_name() {
 
   shopt -s nocasematch
 
+  if [[ $uname =~ .*Microsoft.* ]]; then
+     os="windows"
+  fi
+
   if [[ $uname =~ .*ubuntu.* ]]; then
      os="ubuntu"
   fi

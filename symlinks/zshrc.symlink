@@ -11,5 +11,6 @@ done
 # Load OS specific configuration
 case "$(get_os_name)" in
   darwin) source $DOTFILES/osx/config.zsh ;;
+  windows) source $DOTFILES/windows/config.zsh ;;
   *) source $DOTFILES/unix/config.zsh ;;
 esac
