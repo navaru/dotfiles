@@ -1,8 +1,8 @@
 # set your user tokens as enivornment variables, such as ~/.secrets
 # See the README for examples.
 [user]
-  name = Eugen Tudorancea
-  email = eugen.tudorancea@gmail.com
+	name = Eugen Tudorancea
+	email = eugen.tudorancea@gmail.com
 
 [color]
   ui = true
@@ -127,6 +127,7 @@
   # http://gitfu.wordpress.com/2008/04/20/git-rerere-rereremember-what-you-did-last-time/
   enabled = true
 [filter "lfs"]
-  clean = git-lfs clean %f
-  smudge = git-lfs smudge %f
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
   required = true
+	process = git-lfs filter-process
