@@ -110,7 +110,7 @@
 
 [core]
   autocrlf = false
-  editor = /usr/bin/vim
+  editor = subl -n -w
   excludesfile = ~/.gitignore
   quotepath = false
 
