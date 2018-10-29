@@ -1,0 +1,9 @@
+sudo launchctl stop com.apple.bluetoothd;
+sudo launchctl stop com.apple.diagnosticextensions.osx.bluetooth.helper;
+sudo launchctl stop com.apple.bluetoothReporter;
+sudo launchctl stop com.apple.IOBluetoothUSBDFU;
+sudo launchctl stop com.apple.bluetoothaudiod;
+sudo kextunload -v 6 -b com.apple.iokit.IOBluetoothFamily;
+sudo kextunload -v 6 -b com.apple.iokit.IOBluetoothHostControllerTransport;
+sudo kextunload -v 6 -b com.apple.iokit.IOBluetoothHostControllerUSBTransport;
+sudo kextunload -v 6 -b com.apple.iokit.BroadcomBluetoothHostControllerUSBTransport;
