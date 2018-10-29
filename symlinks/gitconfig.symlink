@@ -110,7 +110,7 @@ default = tracking
 
 [core]
 autocrlf = false
-editor = /usr/bin/vim
+editor = subl -n -w
 excludesfile = ~/.gitignore
 quotepath = false
 
@@ -132,3 +132,4 @@ clean = git-lfs clean -- %f
 smudge = git-lfs smudge -- %f
 required = true
 process = git-lfs filter-process
+
