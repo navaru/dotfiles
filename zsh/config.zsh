@@ -3,9 +3,14 @@ HISTFILE=$HOME/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 
+# ls colors
+autoload -U colors && colors
 
+setopt No_Beep
+setopt auto_cd
+setopt multios
 setopt prompt_subst  # setup the prompt with pretty colors
-setopt NO_BEEP
+
 setopt append_history
 setopt extended_history
 setopt hist_expire_dups_first
@@ -14,10 +19,6 @@ setopt hist_ignore_space
 setopt hist_verify
 setopt inc_append_history
 setopt share_history # share command history data
-
-
-autoload -U colors; colors;
-autoload -U compinit; compinit;
 
 
 # Completion
