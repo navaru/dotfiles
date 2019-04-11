@@ -18,7 +18,7 @@ alias ip-wan="dig +short myip.opendns.com @resolver1.opendns.com"
 alias ip-lan="ifconfig -a | grep -oE '([0-9]{1,3}[\.]){3}[0-9]{1,3}'"
 
 # Enhanced WHOIS lookups
-alias whois="whois -h whois-servers.net"
+alias whois="whois -h whois.name.com"
 
 # Reload fish
 alias reload="source ~/.zshrc"
