@@ -1,6 +1,7 @@
 # Ignore .git folders by default
 .git
 .rnpm
+.vscode
 tmp
 node_modules
 
