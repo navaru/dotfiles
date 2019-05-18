@@ -1,8 +1,8 @@
 # set your user tokens as enivornment variables, such as ~/.secrets
 # See the README for examples.
 [user]
-name = Eugen Tudorancea
-email = eugen.tudorancea@gmail.com
+	name = Eugen Tudorancea
+	email = eugen.tudorancea@gmail.com
 
 [color]
 ui = true

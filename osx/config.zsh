@@ -9,10 +9,11 @@ export SCRIPTS="$(dirname $0)/bin"
 
 # set node.js paths
 export N_PREFIX="$HOME/.node"
-export NODE_YARN="$HOME/.yarn/bin"
 export NODE_GLOBAL="$N_PREFIX/bin"
 export NODE_LOCAL="./node_modules/.bin"
-export NODE_PATHS="$NODE_YARN:$NODE_LOCAL:$NODE_GLOBAL"
+export NODE_YARN="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin"
+export NODE_PATHS="$NODE_LOCAL:$NODE_YARN:$NODE_GLOBAL"
+alias esm="node --experimental-modules --es-module-specifier-resolution=node --no-warnings"
 
 
 # set php paths
