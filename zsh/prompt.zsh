@@ -18,7 +18,7 @@ git_status() {
     return
   fi
 
-  echo $(set_text $color "●")
+  echo -n $(set_text $color "●")
 }
 
 
@@ -30,27 +30,18 @@ git_branch() {
 git_prompt() {
   # check if git repository
   if git branch &> /dev/null; then
-    echo " ⊷ $(git_branch) $(git_status)"
+    echo -n " ⊷ $(git_branch) $(git_status)"
   fi
 }
 
-
 prompt() {
-  local pwd="$(set_text blue ${PWD/#$HOME/\~})"
+  local location="%{$fg[green]%}$(whoami) • $(hostname)%{$reset_color%}"
+  local pwd="$(set_text blue ${PWD/#$HOME/\~}) — $location"
   local cmd=" ▸ "
 
   local prompt="\n$pwd$(git_prompt) \n$cmd"
 
-  printf "$prompt"
-}
-
-rprompt() {
-  local lineup=$'\e[1A'
-  local linedown=$'\e[1B'
-  local hostname="%{$fg[green]%} $(whoami) • $(hostname) %{$reset_color%}"
-
-  echo "%{$lineup%}$hostname%{$linedown%}"
+  echo -n "$prompt"
 }
 
 PS1='$(prompt)'
-RPROMPT='$(rprompt)'

@@ -1,11 +1,11 @@
 # History
 HISTFILE=$HOME/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=1000
+SAVEHIST=1000
 
 
 # ls colors
-autoload -U colors && colors
+autoload -Uz colors; colors;
 
 setopt No_Beep
 setopt auto_cd
@@ -23,7 +23,7 @@ setopt share_history # share command history data
 
 
 # Completion
-autoload -U compinit; compinit;
+autoload -Uz compinit; compinit -C;
 
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' list-colors ''
