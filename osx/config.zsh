@@ -30,7 +30,7 @@ alias dkrc="docker-compose"
 
 # set golang paths
 export GOPATH=$HOME/.go
-export GOROOT=$(brew --prefix golang)/libexec
+export GOROOT=/usr/local/opt/go/libexec
 export PATH=$PATH:${GOPATH}/bin:${GOROOT}/bin
 
 
