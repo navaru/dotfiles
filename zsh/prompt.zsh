@@ -35,7 +35,7 @@ git_prompt() {
 }
 
 prompt() {
-  local location="%{$fg[green]%}$(whoami) • $(hostname)%{$reset_color%}"
+  local location="%{$fg[green]%}$(whoami) – $(hostname)%{$reset_color%}"
   local pwd="$(set_text blue ${PWD/#$HOME/\~})"
   local cmd=" ▸ "
 
