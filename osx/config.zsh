@@ -8,42 +8,20 @@ export SCRIPTS="$(dirname $0)/bin"
 
 
 # set node.js paths
-export N_PREFIX="$HOME/.node"
-export NODE_GLOBAL="$N_PREFIX/bin"
 export NODE_LOCAL="./node_modules/.bin"
-export NODE_YARN="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin"
-export NODE_PATHS="$NODE_LOCAL:$NODE_YARN:$NODE_GLOBAL"
-alias esm="node --experimental-modules --es-module-specifier-resolution=node --no-warnings"
-
-
-# set php paths
-export COMPOSER_GLOBAL="$HOME/.composer/vendor/bin"
-export COMPOSER_LOCAL="./vendor/bin"
-export PHP_PATHS="$COMPOSER_GLOBAL:$COMPOSER_LOCAL"
-
-
-# Docker
-alias dkr="docker"
-alias dkrm="docker-machine"
-alias dkrc="docker-compose"
+export NODE_PATHS="$NODE_LOCAL:$NODE_YARN"
+# alias to run node with ES Modules support
+alias esm="node --experimental-modules --experimental-json-modules --es-module-specifier-resolution=node --no-warnings"
 
 
 # set golang paths
 export GOPATH=$HOME/.go
 export GOROOT=/usr/local/opt/go/libexec
-export PATH=$PATH:${GOPATH}/bin:${GOROOT}/bin
-
-
-# set android sdk paths
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
+export GO_PATHS=$GOPATH/bin:$GOROOT/bin
 
 
 # Export PATH last
-export PATH="$SCRIPTS:$NODE_PATHS:$PHP_PATHS:$PATH"
+export PATH="$SCRIPTS:$NODE_PATHS:$GO_PATHS:$PATH"
 
 
 echo "\n  Hello $(id -un)!"
