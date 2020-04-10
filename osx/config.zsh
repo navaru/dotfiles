@@ -10,8 +10,6 @@ export SCRIPTS="$(dirname $0)/bin"
 # set node.js paths
 export NODE_LOCAL="./node_modules/.bin"
 export NODE_PATHS="$NODE_LOCAL:$NODE_YARN"
-# alias to run node with ES Modules support
-alias esm="node --experimental-modules --experimental-json-modules --es-module-specifier-resolution=node --no-warnings"
 
 
 # set golang paths
@@ -20,8 +18,14 @@ export GOROOT=/usr/local/opt/go/libexec
 export GO_PATHS=$GOPATH/bin:$GOROOT/bin
 
 
-# Export PATH last
+# export PATH last
 export PATH="$SCRIPTS:$NODE_PATHS:$GO_PATHS:$PATH"
+
+
+# run node with ES Modules support
+alias esm="node --experimental-modules --experimental-json-modules --es-module-specifier-resolution=node --no-warnings"
+# easier access to projects folder
+alias projects="cd /Volumes/Media/Projects"
 
 
 echo "\n  Hello $(id -un)!"

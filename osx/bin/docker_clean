@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-if [[ $1 =~ "all" ]]; then
-  docker stop --time=1 $(docker ps --quiet --no-trunc)
-  docker rm $(docker ps --all --quiet --no-trunc)
-else
-  docker rm $(docker ps --all --quiet --no-trunc --filter status=exited)
-fi

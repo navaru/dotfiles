@@ -1,6 +1,0 @@
-#!/bin/bash
-
-date 0412092018
-open "/Applications/Sketch Beta.app"
-sleep 5
-sntp -sS time.apple.com
