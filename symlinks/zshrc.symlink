@@ -14,3 +14,9 @@ case "$(get_os_name)" in
   windows) source $DOTFILES/windows/config.zsh ;;
   *) source $DOTFILES/unix/config.zsh ;;
 esac
+
+
+# Load local config and plugins
+if [ -f "$HOME/.local.zsh" ]; then
+  source "$HOME/.local.zsh"
+fi
