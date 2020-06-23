@@ -26,8 +26,6 @@ export PATH="$SCRIPTS:$NODE_PATHS:$GO_PATHS:$PATH"
 
 # run node with ES Modules support
 alias esm="node --experimental-modules --experimental-json-modules --es-module-specifier-resolution=node --experimental-import-meta-resolve"
-# easier access to projects folder
-alias projects="cd /Volumes/Media/Projects"
 # cat alternative installed from brew
 alias cat="bat"
 # by default open paths in ForkLift
