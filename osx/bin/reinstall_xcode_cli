@@ -1,7 +1,9 @@
-#!/bin/env zsh
+#!/usr/bin/env zsh
 
 XCODE_SELECT=$(xcode-select --print-path)
 
+echo "Reset xcode-select"
+sudo xcode-select --reset
 echo "Removing: $XCODE_SELECT"
 sudo rm -rf $XCODE_SELECT
 echo "Go to System Updates"
