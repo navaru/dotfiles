@@ -5,5 +5,5 @@ Minimal shell setup based on `zsh`.
 #### Install:
 
 ```
-> curl https://raw.githubusercontent.com/ugin/dotfiles/main/install.sh | bash
+curl https://raw.githubusercontent.com/ugin/dotfiles/main/install.sh | bash
 ```
