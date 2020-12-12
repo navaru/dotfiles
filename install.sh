@@ -2,7 +2,7 @@
 
 set -e
 
-DOTFILES_REPOSITORY="https://github.com/ugin/dotfiles.git"
+DOTFILES_REPOSITORY="https://github.com/navaru/dotfiles.git"
 DOTFILES_PATH="$HOME/.dotfiles"
 
 

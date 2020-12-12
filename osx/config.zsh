@@ -11,7 +11,7 @@ export SCRIPTS="$(dirname $0)/bin"
 export NODE_LOCAL="./node_modules/.bin"
 export N_PREFIX="$HOME/.node"
 export N_PREFIX_ACTIVE="$HOME/.node/bin"
-export NODE_PATHS="$NODE_LOCAL:$NODE_YARN:$N_PREFIX_ACTIVE"
+export NODE_PATHS="$NODE_LOCAL:$N_PREFIX_ACTIVE"
 
 
 # set golang paths
@@ -26,10 +26,7 @@ export PATH="$SCRIPTS:$NODE_PATHS:$GO_PATHS:$PATH"
 
 # run node with ES Modules support
 alias esm="node --experimental-modules --experimental-json-modules --es-module-specifier-resolution=node --experimental-import-meta-resolve"
-# cat alternative installed from brew
-alias cat="bat"
 # by default open paths in ForkLift
-alias open="open -a ForkLift"
-
+alias fl="open -a ForkLift"
 
 echo "\n  Hello $(id -un)!"
