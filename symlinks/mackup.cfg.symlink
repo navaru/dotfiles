@@ -1,5 +1,13 @@
 [storage]
 engine = file_system
 path = Drive
-directory = sync
+directory = sync/mackup
 
+[applications_to_sync]
+editorconfig
+forklift
+iterm2
+npm
+sublime-merge
+sublime-text-3
+tableplus
