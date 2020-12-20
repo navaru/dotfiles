@@ -6,9 +6,6 @@ PATH="/usr/local/bin:$PATH"
 # OSX scripts path
 export SCRIPTS="$(dirname $0)/bin"
 
-echo $SCRIPTS
-echo "SAJDOIASJDOIAJSDOIJA"
-
 
 # set node.js paths
 export NODE_LOCAL="./node_modules/.bin"

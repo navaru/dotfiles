@@ -1,7 +1,7 @@
 load() {
 	local zshrc=$DOTFILES/$1/zshrc
 
-	[ -f zshrc ] && source $zshrc
+	[ -f $zshrc ] && source $zshrc
 }
 
 # Load OS specific configuration

@@ -7,13 +7,13 @@ PATH="$DOTFILES/bin:$PATH"
 darwin() {
 	local zshenv=$DOTFILES/darwin/zshenv
 
-	[ -f zshenv ] && source $zshenv
+	[ -f $zshenv ] && source $zshenv
 }
 
 linux() {
 	local zshenv=$DOTFILES/linux/zshenv
 
-	[ -f zshenv ] && source $zshenv
+	[ -f $zshenv ] && source $zshenv
 }
 
 # Load OS specific configuration
