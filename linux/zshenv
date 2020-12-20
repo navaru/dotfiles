@@ -1,0 +1,7 @@
+# set node.js paths
+export NODE_LOCAL="./node_modules/.bin"
+export N_PREFIX="$HOME/.node"
+export N_PREFIX_ACTIVE="$HOME/.node/bin"
+
+# export PATH last
+export PATH="$NODE_LOCAL:$N_PREFIX_ACTIVE:$PATH"

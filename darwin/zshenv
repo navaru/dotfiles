@@ -6,6 +6,9 @@ PATH="/usr/local/bin:$PATH"
 # OSX scripts path
 export SCRIPTS="$(dirname $0)/bin"
 
+echo $SCRIPTS
+echo "SAJDOIASJDOIAJSDOIJA"
+
 
 # set node.js paths
 export NODE_LOCAL="./node_modules/.bin"
@@ -22,11 +25,3 @@ export GO_PATHS=$GOPATH/bin:$GOROOT/bin
 
 # export PATH last
 export PATH="$SCRIPTS:$NODE_PATHS:$GO_PATHS:$PATH"
-
-
-# run node with ES Modules support
-alias esm="node --experimental-modules --experimental-json-modules --es-module-specifier-resolution=node --experimental-import-meta-resolve"
-# by default open paths in ForkLift
-alias fl="open -a ForkLift"
-
-echo "\n  Hello $(id -un)!"

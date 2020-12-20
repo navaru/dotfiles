@@ -22,3 +22,6 @@ alias whois="whois -h whois.name.com"
 
 # Reload fish
 alias reload="source ~/.zshrc"
+
+# run node with ES Modules support
+alias esm="node --experimental-vm-modules --experimental-json-modules --experimental-specifier-resolution=node"

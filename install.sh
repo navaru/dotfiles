@@ -24,11 +24,10 @@ clean() {
 
 # create symlinks to files from: dotfiles/symlinks
 setup_symlinks() {
-  local symlinks=$(find $DOTFILES_PATH -name "*.symlink")
+  local symlinks=$(find $DOTFILES_PATH/symlinks -type f)
 
   for symlink in $symlinks; do
-    local filename=$(basename $symlink)
-    local file=$HOME/.${filename%.*}
+    local file=$HOME/.$(basename $symlink)
 
     # if file exists, create backup
     if [ -f $file ] || [ -L $file ]; then

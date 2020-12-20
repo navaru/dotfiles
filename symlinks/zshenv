@@ -1,0 +1,28 @@
+# Export the .dotfiles path
+export DOTFILES="$HOME/.dotfiles"
+
+# Add dotfiles helpers path
+PATH="$DOTFILES/bin:$PATH"
+
+darwin() {
+	local zshenv=$DOTFILES/darwin/zshenv
+
+	[ -f zshenv ] && source $zshenv
+}
+
+linux() {
+	local zshenv=$DOTFILES/linux/zshenv
+
+	[ -f zshenv ] && source $zshenv
+}
+
+# Load OS specific configuration
+case "$(get_os_name)" in
+  darwin) darwin;;
+  *) linux;;
+esac
+
+# Load local (only on current machine) configuration
+if [ -f "$HOME/.local.zsh" ]; then
+  source "$HOME/.local.zsh"
+fi
