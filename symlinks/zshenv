@@ -23,6 +23,6 @@ case "$(get_os_name)" in
 esac
 
 # Load local (only on current machine) configuration
-if [ -f "$HOME/.local.zsh" ]; then
-  source "$HOME/.local.zsh"
+if [ -f "$HOME/.zshlocal" ]; then
+  source "$HOME/.zshlocal"
 fi
