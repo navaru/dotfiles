@@ -1,6 +1,6 @@
 # ensure you are using the brew installed versions
 # make sure /usr/local/bin is before /usr/sbin in your PATH
-PATH="/usr/local/bin:$PATH"
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 
 # OSX scripts path
