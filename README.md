@@ -8,8 +8,8 @@ Minimal shell setup based on `zsh`.
 curl https://raw.githubusercontent.com/navaru/dotfiles/main/install.sh | bash
 ```
 
-### Install Node.js version manager:
+### Install Node.js version manager ([volta.sh](https://volta.sh)):
 
 ```
-TARGET=/usr/local/bin/n; curl https://raw.githubusercontent.com/tj/n/master/bin/n > $TARGET && chmod +x $TARGET
+curl https://get.volta.sh | bash
 ```
