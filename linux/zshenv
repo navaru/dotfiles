@@ -1,5 +1,10 @@
 # set node.js paths
 export NODE_LOCAL="./node_modules/.bin"
 
+# set node.js paths
+export VOLTA_HOME="$HOME/.volta"
+export NODE_LOCAL="./node_modules/.bin"
+export NODE_PATHS="$NODE_LOCAL:$VOLTA_HOME/bin"
+
 # export PATH last
-export PATH="$NODE_LOCAL:$N_PREFIX_ACTIVE:$PATH"
+export PATH="$SCRIPTS:$NODE_PATHS:$GO_PATHS:$PATH"
