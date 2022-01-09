@@ -8,8 +8,8 @@ Minimal shell setup based on `zsh`.
 curl https://raw.githubusercontent.com/navaru/dotfiles/main/install.sh | bash
 ```
 
-### Install Node.js version manager ([volta.sh](https://volta.sh)):
+### Install Node.js version & package manager ([pnpm](https://pnpm.io)):
 
 ```
-curl https://get.volta.sh | bash
+curl -fsSL https://get.pnpm.io/install.sh | sh -
 ```

@@ -14,3 +14,6 @@ esac
 for file in $DOTFILES/zsh/**/*.zsh; do
   source $file
 done
+
+export PNPM_HOME="/Users/eugen/Library/pnpm"
+export PATH="$PNPM_HOME:$PATH"
