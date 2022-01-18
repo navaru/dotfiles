@@ -8,8 +8,22 @@ Minimal shell setup based on `zsh`.
 curl https://raw.githubusercontent.com/navaru/dotfiles/main/install.sh | bash
 ```
 
-### Install Node.js version & package manager ([pnpm](https://pnpm.io)):
+### Useful CLI tools
 
+[peco](https://github.com/peco/peco) – interactive filtering tool
+
+```sh
+brew install peco
 ```
-curl -fsSL https://get.pnpm.io/install.sh | sh -
+
+[jq](https://github.com/stedolan/jq) – JSON processor
+
+```sh
+brew install jq
+```
+
+[httpie](https://github.com/httpie/httpie) – human-friendly HTTP client
+
+```sh
+brew install httpie
 ```
