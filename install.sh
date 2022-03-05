@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
-DOTFILES_REPOSITORY="https://github.com/navaru/dotfiles.git"
-DOTFILES_PATH="$HOME/.dotfiles"
+REPOSITORY="https://github.com/navaru/dotfiles.git"
+DOTFILES="$HOME/.dotfiles"
 
 
 log() {
@@ -15,28 +15,43 @@ is_command() {
 }
 
 
+# if file exists, create backup
+set_backup() {
+  if [ -f $1 ] || [ -L $1 ]; then
+    mv "$1" "$1.backup"
+  fi
+}
+
 # remove the backup files after symlinking
 clean() {
   find $HOME -maxdepth 1 -name "*.backup" -delete
   echo "Cleaned backup files"
 }
 
+# clone dotfiles repository if not available
+download_dotfiles() {
+  if [ ! -d "$DOTFILES" ]; then
+    git clone "$REPOSITORY" "$DOTFILES"
+    log "Downloaded dotfiles to $DOTFILES"
+  fi
+}
+
+# create the zshrc file that will source the dotfiles
+set_zshrc() {
+  local zshrc="$HOME/.zshrc"
+  set_backup $zshrc
+  echo 'source $HOME/.dotfiles/zshrc' > "$zshrc"
+  log "Created: $zshrc"
+}
 
 # create symlinks to files from: dotfiles/symlinks
-setup_symlinks() {
-  local symlinks=$(find $DOTFILES_PATH/symlinks -type f)
-
-  for symlink in $symlinks; do
-    local file=$HOME/.$(basename $symlink)
-
-    # if file exists, create backup
-    if [ -f $file ] || [ -L $file ]; then
-      mv "$file" "$file.backup"
-    fi
-
-    if (ln -s "$symlink" "$file"); then
-      log "Created symlink: $file"
-    fi
+set_symlinks() {
+  local files=("gitconfig" "vimrc")
+  
+  for filename in ${files[@]}; do
+    set_backup "$HOME/.$filename"
+    ln -s "$DOTFILES/$filename" "$HOME/.$filename"
+    log "Symlink: $HOME/.$filename"
   done
 }
 
@@ -47,12 +62,9 @@ main() {
     exit 1
   fi
 
-  # clone repo if not available
-  if [ ! -d "$DOTFILES_PATH" ]; then
-    git clone "$DOTFILES_REPOSITORY" "$DOTFILES_PATH"
-  fi
-
-  setup_symlinks
+  download_dotfiles
+  set_zshrc 
+  set_symlinks
 
   # parse options
   for option in $@; do

@@ -4,21 +4,19 @@ get_os_name() {
   local uname=$(uname -a)
   local os
 
-  shopt -s nocasematch
-
   if [[ $uname =~ .*Microsoft.* ]]; then
      os="windows"
-  fi
 
-  if [[ $uname =~ .*ubuntu.* ]]; then
+  elif [[ $uname =~ .*ubuntu.* ]]; then
      os="ubuntu"
-  fi
 
-  if [[ $uname =~ .*centos.* ]]; then
+  elif [[ $uname =~ .*debian.* ]]; then
+     os="debian"
+
+  elif [[ $uname =~ .*centos.* ]]; then
      os="centos"
-  fi
 
-  if [[ $uname =~ .*darwin.* ]]; then
+  else [[ $uname =~ .*darwin.* ]]
      os="darwin"
   fi
 

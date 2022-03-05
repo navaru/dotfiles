@@ -1,9 +1,9 @@
-# set node.js paths
-export NODE_LOCAL="./node_modules/.bin"
+# linux scripts
+export SCRIPTS="$(dirname $0)/bin"
 
 # set node.js paths
 export NODE_LOCAL="./node_modules/.bin"
 export NODE_PATHS="$NODE_LOCAL"
 
 # export PATH last
-export PATH="$SCRIPTS:$NODE_PATHS:$GO_PATHS:$PATH"
+export PATH="$SCRIPTS:$NODE_PATHS:$PATH"

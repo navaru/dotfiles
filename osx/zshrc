@@ -1,0 +1,15 @@
+# OSX scripts path
+export DOTFILES_SCRIPTS="$(dirname $0)/bin"
+
+# ensure you are using the brew installed versions
+# make sure /usr/local/bin is before /usr/sbin in your PATH
+export HOMEBREW="/opt/homebrew/bin:/usr/local/bin"
+
+# set node.js paths
+export NODE_LOCAL="./node_modules/.bin"
+
+# set pnpm paths
+export PNPM_HOME="/Users/eugen/.pnpm"
+
+# PATH last
+export PATH="$DOTFILES_SCRIPTS:$HOMEBREW:$NODE_LOCAL:$PNPM_HOME:$PATH"
