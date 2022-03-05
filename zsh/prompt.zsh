@@ -43,4 +43,4 @@ prompt() {
   echo -n "$prompt"
 }
 
-PS1="$(prompt)"
+PS1='$(prompt)'
