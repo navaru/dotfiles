@@ -1,6 +1,3 @@
-# OSX scripts path
-export DOTFILES="$(dirname $0)/bin"
-
 # ensure you are using the brew installed versions
 # make sure /usr/local/bin is before /usr/sbin in your PATH
 export HOMEBREW="/opt/homebrew/bin:/usr/local/bin"
@@ -16,4 +13,4 @@ export NODE_LOCAL="./node_modules/.bin"
 export NODE_PATHS="$NODE_LOCAL:$PNPM_HOME"
 
 # PATH last
-export PATH="$DOTFILES:$GO_PATHS:$NODE_PATHS:$HOMEBREW:$PATH"
+export PATH="$GO_PATHS:$NODE_PATHS:$HOMEBREW:$PATH"
