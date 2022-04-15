@@ -6,6 +6,8 @@ export HOMEBREW="/opt/homebrew/bin:/usr/local/bin"
 export GOPATH=$HOME/.go
 export GOROOT="/opt/homebrew/opt/go/libexec"
 export GO_PATHS="${GOPATH}/bin:${GOROOT}/bin"
+export GOPROXY="https://proxy.golang.org,direct"
+export GOPRIVATE=""
 
 # set node.js paths
 export PNPM_HOME="/Users/eugen/.pnpm"
