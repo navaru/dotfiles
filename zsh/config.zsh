@@ -1,4 +1,7 @@
-# History
+# zsh path plugins, extensions, etc
+fpath=($HOME/.zsh $fpath)
+
+# history
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=1000
 SAVEHIST=1000
@@ -23,7 +26,7 @@ setopt share_history # share command history data
 
 
 # Completion
-autoload -Uz compinit; compinit -C;
+autoload -Uz compinit; compinit -u;
 
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' list-colors ''
