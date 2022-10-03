@@ -1,24 +1,5 @@
-# ensure you are using the brew installed versions
-# make sure /usr/local/bin is before /usr/sbin in your PATH
-export HOMEBREW="/opt/homebrew/bin:/usr/local/bin"
-
-# set golang envs
-export GOPATH=$HOME/.go
-export GOROOT="/opt/homebrew/opt/go/libexec"
-export GO_PATHS="${GOPATH}/bin:${GOROOT}/bin"
-export GOPROXY="https://proxy.golang.org,direct"
-export GOPRIVATE=""
-
-# set node.js paths
-export PNPM_HOME="/Users/eugen/.pnpm"
-export NODE_LOCAL="./node_modules/.bin"
-export NODE_PATHS="$NODE_LOCAL:$PNPM_HOME"
-
-# set esp envs
-export ESP_PATH="$HOME/.esp"
-export IDF_PATH="$ESP_PATH/esp-idf"
-export IDF_TOOLS_PATH="$ESP_PATH/idf-tools"
-alias espenv="source $ESP_PATH/esp-idf/export.sh"
-
-# PATH last
-export PATH="$GO_PATHS:$NODE_PATHS:$HOMEBREW:$PATH"
+source $DOTFILES/osx/homebrew
+source $DOTFILES/osx/node
+source $DOTFILES/osx/rust
+source $DOTFILES/osx/esp
+source $DOTFILES/osx/go
