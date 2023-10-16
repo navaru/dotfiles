@@ -1,6 +1,0 @@
-export ESP_PATH="$HOME/.esp"
-export IDF_PATH="$ESP_PATH/esp-idf"
-export IDF_TOOLS_PATH="$ESP_PATH/idf-tools"
-
-alias espenv="source $ESP_PATH/esp-idf/export.sh"
-alias get_idf=espenv

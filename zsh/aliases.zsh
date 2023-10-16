@@ -1,6 +1,7 @@
 # Navigation shortcuts
 alias ..="cd .."
 alias ...="cd ../.."
+alias ....="cd ../../.."
 
 # List direcory contents
 alias ls='ls -G'
@@ -13,15 +14,18 @@ alias lsd="ls -l | grep "^d"" # list only dirs
 # Show file size in bytes
 alias fs="stat -f \"%z bytes\""
 
-# IP addresses
-alias ip-wan="dig +short myip.opendns.com @resolver1.opendns.com"
-alias ip-lan="ifconfig -a | grep -oE '([0-9]{1,3}[\.]){3}[0-9]{1,3}'"
-
-# Enhanced WHOIS lookups
-alias whois="whois -h whois.name.com"
-
 # Reload fish
 alias reload="source ~/.zshrc"
 
-# run node with ES Modules support
-alias esm="node --experimental-vm-modules --experimental-json-modules --experimental-specifier-resolution=node"
+# Mac address vendor lookup => macvendor 00:11:22:33:44:55
+alias macvendor="curl -s 'http://api.macvendors.com/$1'"
+
+# Networking
+alias icanhazip="curl 'icanhazip.com'"
+alias ip_info="curl 'ipinfo.io'"
+alias ip_web="dig +short myip.opendns.com @resolver1.opendns.com"
+alias ip_lan="ifconfig en0 | grep inet | awk '{ print $2 }'"
+
+# Encryption
+encrypt() { echo $1 | openssl enc -e -a -base64 -aes-256-cbc -iter 30 -salt; }
+decrypt() { echo $1 | openssl enc -d -base64 -aes-256-cbc -iter 30 -salt; }

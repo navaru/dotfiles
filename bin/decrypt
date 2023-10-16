@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-echo "$1" | openssl base64 -d | openssl enc -d -aes-256-cbc

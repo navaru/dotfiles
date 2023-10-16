@@ -1,5 +1,9 @@
+export PATH="$DOTFILES/bin:$DOTFILES/osx/bin:$PATH"
+
 source $DOTFILES/osx/homebrew
 source $DOTFILES/osx/node
 source $DOTFILES/osx/rust
-source $DOTFILES/osx/esp
 source $DOTFILES/osx/go
+
+alias fork="open -a ForkLift"
+alias wifi_pass="security find-generic-password -wa"
