@@ -14,7 +14,10 @@ alias lsd="ls -l | grep "^d"" # list only dirs
 # Show file size in bytes
 alias fs="stat -f \"%z bytes\""
 
-# Reload fish
+# Show all running apps and ports
+alias lsports="sudo lsof -i -P -n"
+
+# Reload zshrc
 alias reload="source ~/.zshrc"
 
 # Mac address vendor lookup => macvendor 00:11:22:33:44:55
