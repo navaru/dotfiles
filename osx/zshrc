@@ -1,9 +1,38 @@
 export PATH="$DOTFILES/bin:$DOTFILES/osx/bin:$PATH"
 
-source $DOTFILES/osx/homebrew
-source $DOTFILES/osx/node
-source $DOTFILES/osx/rust
-source $DOTFILES/osx/go
+# ensure you are using the brew installed versions
+# make sure /usr/local/bin is before /usr/sbin in your PATH
+export HOMEBREW="/opt/homebrew"
+export PATH="$HOMEBREW/bin:/usr/local/bin:$PATH"
 
-alias fork="open -a ForkLift"
+
+# Node.js setup
+export PNPM_HOME="$HOME/.pnpm"
+export NODE_LOCAL="./node_modules/.bin"
+export PATH="$NODE_LOCAL:$PNPM_HOME:$PATH"
+
+
+# Bun setup
+export BUN_PATH="$HOME/.bun"
+export PATH="$BUN_PATH/bin:$PATH"
+[ -s "$BUN_PATH/_bun" ] && source "$BUN_PATH/_bun"
+
+
+# Rust setup
+export CARGO_PATH="$HOME/.cargo"
+export PATH="$CARGO_PATH/bin:$PATH"
+# [ -s "$HOME/.zsh/_cargo" ] && source "$HOME/.zsh/_cargo"
+# [ -s "$HOME/.zsh/_rustup" ] && source "$HOME/.zsh/_rustup"
+
+
+# Go setup
+export GOPATH="$HOME/.go"
+export GOROOT="$HOMEBREW/opt/go/libexec"
+export GOPROXY="https://proxy.golang.org,direct"
+export GOPRIVATE=""
+export PATH="${GOPATH}/bin:${GOROOT}/bin:$PATH"
+
+
+# useful aliases
 alias wifi_pass="security find-generic-password -wa"
+alias fork="open -a ForkLift"

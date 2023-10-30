@@ -1,2 +1,3 @@
+# pnpm settings
 auto-install-peers=true
 resolution-mode=highest

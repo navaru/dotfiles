@@ -1,6 +1,0 @@
-export GOPATH="$HOME/.go"
-export GOROOT="$HOMEBREW/opt/go/libexec"
-export GOPROXY="https://proxy.golang.org,direct"
-export GOPRIVATE=""
-
-export PATH="${GOPATH}/bin:${GOROOT}/bin:$PATH"

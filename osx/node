@@ -1,3 +1,0 @@
-export PNPM_HOME="$HOME/.pnpm"
-export NODE_LOCAL="./node_modules/.bin"
-export PATH="$NODE_LOCAL:$PNPM_HOME:$PATH"

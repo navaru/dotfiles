@@ -30,5 +30,5 @@ alias ip_web="dig +short myip.opendns.com @resolver1.opendns.com"
 alias ip_lan="ifconfig en0 | grep inet | awk '{ print $2 }'"
 
 # Encryption
-encrypt() { echo $1 | openssl enc -e -a -base64 -aes-256-cbc -iter 30 -salt; }
-decrypt() { echo $1 | openssl enc -d -base64 -aes-256-cbc -iter 30 -salt; }
+encrypt() { echo $@ | openssl enc -e -a -base64 -aes-256-cbc -iter 30 -salt; }
+decrypt() { echo $@ | openssl enc -d -base64 -aes-256-cbc -iter 30 -salt; }
