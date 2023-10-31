@@ -33,6 +33,12 @@ export GOPRIVATE=""
 export PATH="${GOPATH}/bin:${GOROOT}/bin:$PATH"
 
 
+# mkcert setup
+export CAROOT="$HOME/.mkcert"
+# Node does not use the system root store, an env must be set.
+export NODE_EXTRA_CA_CERTS="$CAROOT/rootCA.pem"
+
+
 # useful aliases
 alias wifi_pass="security find-generic-password -wa"
 alias fork="open -a ForkLift"
