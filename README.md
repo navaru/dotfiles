@@ -25,3 +25,7 @@ curl https://raw.githubusercontent.com/navaru/dotfiles/main/install.sh | bash
 - `reinstall_xcode_cli` – resets and removes `xcode-select` to force Xcode Command Line Tools to reinstall
 - `fork` – open a specific path in ForkLift
 - `wifi_pass` – outputs the password of a given WiFi network
+
+### TODOs
+
+[ ] Add a [brewfile](https://github.com/joelparkerhenderson/brewfile/tree/main)
