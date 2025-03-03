@@ -3,6 +3,7 @@
 [user]
 	name = Eugen Tudorancea
 	email = eugen.tudorancea@gmail.com
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAURo2z277C2zt/u8kWw7aqpKFxGg87Ma5gjv1y4SGHu
 
 [color]
 ui = true
@@ -115,7 +116,7 @@ default = tracking
 
 [core]
 autocrlf = false
-editor = code --wait
+editor = cursor --wait
 excludesfile = ~/.gitignore
 quotepath = false
 
@@ -142,3 +143,9 @@ process = git-lfs filter-process
 	defaultBranch = main
 [pull]
 	rebase = false
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[commit]
+	gpgsign = true

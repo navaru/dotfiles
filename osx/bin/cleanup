@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
 # Recursively delete .DS_Store and Icon? files
-find . -type f -name '*.DS_Store' -ls -delete
-find . -type f -name '*Icon?' -ls -delete
+echo "Removing .DS_Store and Icon? files..."
+find . -type f -name '*.DS_Store' -delete
+find . -type f -name '*Icon?' -delete
+
+# Remove +types directories but ignore react-router
+echo "Removing +types directories..."
+find . -type d -name "\+types" -not \( -path "*/.react-router/*" -prune \) -exec rm -rf {} +
